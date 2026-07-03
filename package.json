@@ -1,18 +1,70 @@
 {
   "name": "daveoffice",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Traitement de texte de bureau - usage personnel",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "dist": "electron-builder --win nsis --publish never"
+  },
+  "build": {
+    "appId": "com.killian.daveoffice",
+    "productName": "DaveOffice",
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**",
+      "assets/**",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "assets",
+        "to": "assets"
+      }
+    ],
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "artifactName": "DaveOffice-Setup-${version}.${ext}",
+      "include": "build/installer.nsh"
+    },
+    "fileAssociations": [
+      {
+        "ext": "docx",
+        "name": "Document DaveOffice",
+        "description": "Document DaveOffice",
+        "icon": "assets/icon.ico"
+      }
+    ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "PetitJump",
+        "repo": "DaveOffice"
+      }
+    ]
   },
   "author": "Killian",
   "license": "UNLICENSED",
   "private": true,
   "devDependencies": {
-    "electron": "^43.0.0"
+    "electron": "^43.0.0",
+    "electron-builder": "^26.15.3"
   },
   "dependencies": {
+    "electron-updater": "^6.8.9",
     "html-to-docx": "^1.8.0",
     "mammoth": "^1.12.0"
   }
