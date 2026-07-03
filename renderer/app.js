@@ -256,33 +256,50 @@
     setDirty(true);
   }
 
-  // Couleurs
+  // Couleurs : palettes façon Word
   const foreInput = document.getElementById('forecolor-input');
   const highInput = document.getElementById('highlight-input');
+  const FONT_COLORS = [
+    '#000000', '#44546a', '#c00000', '#ff0000', '#ffc000', '#ffff00', '#92d050', '#00b050',
+    '#00b0f0', '#0070c0', '#002060', '#7030a0', '#e2a1c4', '#808080', '#d9d9d9', '#ffffff'
+  ];
+  const HIGHLIGHT_COLORS = [
+    '#ffff00', '#00ff00', '#00ffff', '#ff00ff', '#0000ff', '#ff0000', '#000080', '#008080',
+    '#008000', '#800080', '#800000', '#808000', '#808080', '#c0c0c0', '#000000', '#ffffff'
+  ];
+
+  function applyForeColor(c) {
+    foreColor = c;
+    document.getElementById('forecolor-bar').style.background = c;
+    exec('foreColor', c);
+  }
+  function applyHighlight(c) {
+    highlightColor = c;
+    document.getElementById('highlight-bar').style.background = c === 'transparent' ? '#ffffff' : c;
+    exec('hiliteColor', c);
+  }
+
   document.getElementById('btn-forecolor').addEventListener('click', (e) => {
-    if (e.shiftKey) { foreInput.click(); return; }
-    exec('foreColor', foreColor);
+    openColorPalette(e.currentTarget, FONT_COLORS, applyForeColor, [
+      { label: 'Automatique (noir)', action: () => applyForeColor('#000000') },
+      { label: 'Autres couleurs...', action: () => foreInput.click() }
+    ]);
   });
   document.getElementById('btn-forecolor').addEventListener('contextmenu', (e) => {
     e.preventDefault(); e.stopPropagation(); foreInput.click();
   });
-  foreInput.addEventListener('input', (e) => {
-    foreColor = e.target.value;
-    document.getElementById('forecolor-bar').style.background = foreColor;
-    exec('foreColor', foreColor);
-  });
+  foreInput.addEventListener('input', (e) => applyForeColor(e.target.value));
+
   document.getElementById('btn-highlight').addEventListener('click', (e) => {
-    if (e.shiftKey) { highInput.click(); return; }
-    exec('hiliteColor', highlightColor);
+    openColorPalette(e.currentTarget, HIGHLIGHT_COLORS, applyHighlight, [
+      { label: 'Aucune couleur', action: () => applyHighlight('transparent') },
+      { label: 'Autres couleurs...', action: () => highInput.click() }
+    ]);
   });
   document.getElementById('btn-highlight').addEventListener('contextmenu', (e) => {
     e.preventDefault(); e.stopPropagation(); highInput.click();
   });
-  highInput.addEventListener('input', (e) => {
-    highlightColor = e.target.value;
-    document.getElementById('highlight-bar').style.background = highlightColor;
-    exec('hiliteColor', highlightColor);
-  });
+  highInput.addEventListener('input', (e) => applyHighlight(e.target.value));
 
   // ---------- Paragraphe ----------
   document.getElementById('btn-indent').addEventListener('click', () => exec('indent'));
@@ -467,15 +484,89 @@
       b.addEventListener('click', () => { closeDropdown(); it.action(); });
       dropdown.appendChild(b);
     }
+    positionDropdown(anchor);
+  }
+  function positionDropdown(anchor) {
     const r = anchor.getBoundingClientRect();
     dropdown.classList.remove('hidden');
     dropdown.style.left = Math.min(r.left, window.innerWidth - dropdown.offsetWidth - 8) + 'px';
     dropdown.style.top = (r.bottom + 2) + 'px';
   }
   function closeDropdown() { dropdown.classList.add('hidden'); }
+  dropdown.addEventListener('mousedown', (e) => e.preventDefault());
   document.addEventListener('mousedown', (e) => {
     if (!dropdown.contains(e.target)) closeDropdown();
   });
+
+  // Palette de couleurs (grille de pastilles + options)
+  function openColorPalette(anchor, colors, onPick, extras) {
+    dropdown.innerHTML = '';
+    const grid = document.createElement('div');
+    grid.className = 'dd-swatches';
+    for (const c of colors) {
+      const s = document.createElement('button');
+      s.className = 'dd-swatch';
+      s.style.background = c;
+      s.title = c;
+      s.addEventListener('click', () => { closeDropdown(); onPick(c); });
+      grid.appendChild(s);
+    }
+    dropdown.appendChild(grid);
+    for (const it of (extras || [])) {
+      const b = document.createElement('button');
+      b.className = 'dd-item';
+      b.textContent = it.label;
+      b.addEventListener('click', () => { closeDropdown(); it.action(); });
+      dropdown.appendChild(b);
+    }
+    positionDropdown(anchor);
+  }
+
+  // Sélecteur de tableau façon Word (grille au survol)
+  function insertTable(rows, cols) {
+    restoreSelection();
+    let html = '<table>';
+    for (let i = 0; i < rows; i++) {
+      html += '<tr>';
+      for (let j = 0; j < cols; j++) html += '<td><br></td>';
+      html += '</tr>';
+    }
+    html += '</table><p><br></p>';
+    document.execCommand('insertHTML', false, html);
+    setDirty(true);
+    updateStatus();
+  }
+  function openTableGrid(anchor) {
+    dropdown.innerHTML = '';
+    const label = document.createElement('div');
+    label.className = 'tbl-label';
+    label.textContent = 'Insérer un tableau';
+    const grid = document.createElement('div');
+    grid.className = 'tbl-grid';
+    const cells = [];
+    for (let r = 1; r <= 8; r++) {
+      for (let c = 1; c <= 10; c++) {
+        const d = document.createElement('button');
+        d.className = 'tbl-cell';
+        d.dataset.r = r;
+        d.dataset.c = c;
+        d.addEventListener('mouseenter', () => {
+          cells.forEach((x) => x.classList.toggle('hot', +x.dataset.r <= r && +x.dataset.c <= c));
+          label.textContent = `Tableau ${c} × ${r}`;
+        });
+        d.addEventListener('click', () => { closeDropdown(); insertTable(r, c); });
+        cells.push(d);
+        grid.appendChild(d);
+      }
+    }
+    grid.addEventListener('mouseleave', () => {
+      cells.forEach((x) => x.classList.remove('hot'));
+      label.textContent = 'Insérer un tableau';
+    });
+    dropdown.appendChild(label);
+    dropdown.appendChild(grid);
+    positionDropdown(anchor);
+  }
 
   // ---------- Onglets ----------
   document.querySelectorAll('.rtab').forEach((tab) => {
@@ -633,19 +724,7 @@
       ]);
       return;
     }
-    const mk = (rows, cols) => ({ label: `Tableau ${cols} × ${rows}`, action: () => {
-      restoreSelection();
-      let html = '<table>';
-      for (let i = 0; i < rows; i++) {
-        html += '<tr>';
-        for (let j = 0; j < cols; j++) html += '<td><br></td>';
-        html += '</tr>';
-      }
-      html += '</table><p><br></p>';
-      document.execCommand('insertHTML', false, html);
-      setDirty(true);
-    }});
-    openDropdown(e.currentTarget, [mk(2, 2), mk(3, 3), mk(4, 4), mk(5, 3), mk(6, 4)]);
+    openTableGrid(e.currentTarget);
   });
 
   document.getElementById('btn-pagebreak').addEventListener('click', () => {
@@ -835,13 +914,30 @@
         e.preventDefault();
         api.winControl('fullscreen');
       } else if (e.key === 'Tab' && editor.contains(document.activeElement)) {
+        e.preventDefault();
         const sel = window.getSelection();
         const el = sel.anchorNode && (sel.anchorNode.nodeType === 3 ? sel.anchorNode.parentElement : sel.anchorNode);
         if (el && el.closest && el.closest('li')) {
-          e.preventDefault();
           document.execCommand(e.shiftKey ? 'outdent' : 'indent');
-          setDirty(true);
+        } else if (el && el.closest && el.closest('td')) {
+          // Tab dans un tableau : cellule suivante/précédente
+          const td = el.closest('td');
+          const cells = [...td.closest('table').querySelectorAll('td')];
+          const next = cells[cells.indexOf(td) + (e.shiftKey ? -1 : 1)];
+          if (next) {
+            const range = document.createRange();
+            range.selectNodeContents(next);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+          }
+          return;
+        } else if (!e.shiftKey) {
+          document.execCommand('insertHTML', false, '&nbsp;&nbsp;&nbsp;&nbsp;');
+        } else {
+          document.execCommand('outdent');
         }
+        setDirty(true);
       }
       return;
     }

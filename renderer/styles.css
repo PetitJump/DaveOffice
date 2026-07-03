@@ -459,6 +459,39 @@ svg { display: block; }
 }
 #dropdown .dd-item:hover { background: #f3f2f1; }
 #dropdown .dd-sep { height: 1px; background: #e1dfdd; margin: 4px 0; }
+.dd-swatches {
+  display: grid;
+  grid-template-columns: repeat(8, 20px);
+  gap: 4px;
+  padding: 8px 12px;
+}
+.dd-swatch {
+  width: 20px; height: 20px;
+  border: 1px solid #c8c6c4;
+  border-radius: 2px;
+  cursor: pointer;
+  padding: 0;
+}
+.dd-swatch:hover { outline: 2px solid #2b579a; outline-offset: 1px; }
+.tbl-label {
+  padding: 6px 12px 2px;
+  font-size: 12px;
+  color: #605e5c;
+}
+.tbl-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 17px);
+  gap: 3px;
+  padding: 6px 12px 10px;
+}
+.tbl-cell {
+  width: 17px; height: 17px;
+  border: 1px solid #a19f9d;
+  background: #fff;
+  padding: 0;
+  cursor: pointer;
+}
+.tbl-cell.hot { background: #d5e3f5; border-color: #2b579a; }
 
 /* Filigrane */
 .watermark {
