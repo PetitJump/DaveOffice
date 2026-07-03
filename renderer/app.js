@@ -586,6 +586,37 @@
     // Ctrl+B/I/U/Z/Y : gérés nativement par Chromium
   });
 
+  // ---------- Mises à jour ----------
+  document.getElementById('btn-update').addEventListener('click', async () => {
+    const r = await api.checkUpdates();
+    if (r.error) {
+      alert('Vérification impossible (connexion ou dépôt inaccessible).\n\n' + r.error);
+      return;
+    }
+    if (r.upToDate) {
+      alert(`DaveOffice est à jour (version ${r.current}).`);
+      return;
+    }
+    const ok = confirm(`Nouvelle version disponible : ${r.latest}\nVersion installée : ${r.current}\n\nMettre à jour maintenant ? L'application redémarrera.`);
+    if (!ok) return;
+    if (dirty && !(await api.confirmDiscard())) return;
+    const u = await api.doUpdate();
+    if (u && u.error) alert('Échec de la mise à jour :\n' + u.error);
+  });
+  document.getElementById('about-text').textContent =
+    `DaveOffice ${api.appVersion} — ` + document.getElementById('about-text').textContent.replace(/^DaveOffice — /, '');
+
+  // ---------- Fichier ouvert depuis Windows (double-clic .docx) ----------
+  api.onFileOpened(async (data) => {
+    if (dirty && !(await api.confirmDiscard())) return;
+    editor.innerHTML = data.html || '<p><br></p>';
+    currentFilePath = data.filePath;
+    currentFileName = data.fileName;
+    setDirty(false);
+    updateStatus();
+    editor.focus();
+  });
+
   // ---------- Contrôles fenêtre ----------
   document.getElementById('win-min').addEventListener('click', () => api.winControl('min'));
   document.getElementById('win-max').addEventListener('click', () => api.winControl('max'));

@@ -1,12 +1,27 @@
 const { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const { execFile, spawn } = require('child_process');
+
+const APP_VERSION = require('./package.json').version;
 
 let win = null;
 let isDirty = false;
+let pendingFile = findFileArg(process.argv);
 
 function escapeHtml(s) {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function findFileArg(argv) {
+  for (const a of argv.slice(1)) {
+    if (/\.(docx|html|htm|txt)$/i.test(a)) {
+      try {
+        if (fs.existsSync(a) && fs.statSync(a).isFile()) return path.resolve(a);
+      } catch (e) { /* ignore */ }
+    }
+  }
+  return null;
 }
 
 function wrapHtml(bodyHtml) {
@@ -24,6 +39,47 @@ function wrapHtml(bodyHtml) {
 </head>
 <body>${bodyHtml}</body>
 </html>`;
+}
+
+async function loadFileToHtml(p) {
+  const ext = path.extname(p).toLowerCase();
+  if (fs.statSync(p).size === 0) return '<p><br></p>';
+  if (ext === '.docx') {
+    const mammoth = require('mammoth');
+    const res = await mammoth.convertToHtml({ path: p });
+    return res.value || '<p><br></p>';
+  }
+  if (ext === '.txt') {
+    const t = fs.readFileSync(p, 'utf8');
+    return t.split(/\r?\n/).map((l) => `<p>${escapeHtml(l) || '<br>'}</p>`).join('');
+  }
+  const t = fs.readFileSync(p, 'utf8');
+  const m = t.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+  return m ? m[1] : t;
+}
+
+async function sendFileToWindow(p) {
+  try {
+    const html = await loadFileToHtml(p);
+    win.webContents.send('file-opened', { html, filePath: p, fileName: path.basename(p) });
+  } catch (err) {
+    dialog.showErrorBox('Erreur d\'ouverture', String(err.message || err));
+  }
+}
+
+// Instance unique : un double-clic sur un .docx réutilise la fenêtre existante
+const gotLock = app.requestSingleInstanceLock();
+if (!gotLock) {
+  app.quit();
+} else {
+  app.on('second-instance', (e, argv) => {
+    if (!win) return;
+    if (win.isMinimized()) win.restore();
+    win.show();
+    win.focus();
+    const f = findFileArg(argv);
+    if (f) sendFileToWindow(f);
+  });
 }
 
 function createWindow() {
@@ -44,6 +100,13 @@ function createWindow() {
   });
 
   win.loadFile(path.join(__dirname, 'renderer', 'index.html'));
+
+  win.webContents.on('did-finish-load', () => {
+    if (pendingFile) {
+      sendFileToWindow(pendingFile);
+      pendingFile = null;
+    }
+  });
 
   // Correcteur orthographique en français
   try {
@@ -177,21 +240,8 @@ ipcMain.handle('open-file', async () => {
   });
   if (r.canceled || !r.filePaths.length) return { canceled: true };
   const p = r.filePaths[0];
-  const ext = path.extname(p).toLowerCase();
   try {
-    let html = '';
-    if (ext === '.docx') {
-      const mammoth = require('mammoth');
-      const res = await mammoth.convertToHtml({ path: p });
-      html = res.value;
-    } else if (ext === '.txt') {
-      const t = fs.readFileSync(p, 'utf8');
-      html = t.split(/\r?\n/).map((l) => `<p>${escapeHtml(l) || '<br>'}</p>`).join('');
-    } else {
-      const t = fs.readFileSync(p, 'utf8');
-      const m = t.match(/<body[^>]*>([\s\S]*)<\/body>/i);
-      html = m ? m[1] : t;
-    }
+    const html = await loadFileToHtml(p);
     return { canceled: false, filePath: p, fileName: path.basename(p), html };
   } catch (err) {
     dialog.showErrorBox('Erreur d\'ouverture', String(err.message || err));
@@ -224,4 +274,56 @@ ipcMain.handle('pick-image', async () => {
   if (ext === 'jpg') ext = 'jpeg';
   const data = fs.readFileSync(p).toString('base64');
   return `data:image/${ext};base64,${data}`;
+});
+
+// --- Mises à jour (via les tags de release du repo GitHub) ---
+
+function runGit(args) {
+  return new Promise((resolve, reject) => {
+    execFile('git', args, { cwd: __dirname, windowsHide: true }, (err, stdout, stderr) => {
+      if (err) reject(new Error((stderr || err.message).trim()));
+      else resolve(stdout);
+    });
+  });
+}
+
+function cmpVersion(a, b) {
+  const x = a.split('.').map(Number);
+  const y = b.split('.').map(Number);
+  for (let i = 0; i < 3; i++) {
+    if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) - (y[i] || 0);
+  }
+  return 0;
+}
+
+ipcMain.handle('check-updates', async () => {
+  try {
+    const out = await runGit(['ls-remote', '--tags', 'origin']);
+    const tags = [...out.matchAll(/refs\/tags\/v?(\d+\.\d+\.\d+)\s*$/gm)].map((m) => m[1]);
+    if (!tags.length) return { current: APP_VERSION, latest: APP_VERSION, upToDate: true };
+    tags.sort(cmpVersion);
+    const latest = tags[tags.length - 1];
+    return { current: APP_VERSION, latest, upToDate: cmpVersion(latest, APP_VERSION) <= 0 };
+  } catch (err) {
+    return { error: String(err.message || err) };
+  }
+});
+
+ipcMain.handle('do-update', async () => {
+  const run = (cmd, args) => new Promise((resolve, reject) => {
+    const p = spawn(cmd, args, { cwd: __dirname, shell: true, windowsHide: true });
+    let errOut = '';
+    p.stderr.on('data', (d) => { errOut += d; });
+    p.on('error', reject);
+    p.on('close', (c) => (c === 0 ? resolve() : reject(new Error(errOut.trim() || ('code ' + c)))));
+  });
+  try {
+    await run('git', ['pull', '--ff-only']);
+    await run('npm', ['install', '--no-audit', '--no-fund']);
+    isDirty = false;
+    app.relaunch();
+    app.exit(0);
+  } catch (err) {
+    return { error: String(err.message || err) };
+  }
 });
