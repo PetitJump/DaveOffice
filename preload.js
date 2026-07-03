@@ -2,6 +2,9 @@ const { contextBridge, ipcRenderer, clipboard } = require('electron');
 
 contextBridge.exposeInMainWorld('daveAPI', {
   appVersion: ipcRenderer.sendSync('get-version'),
+  userName: ipcRenderer.sendSync('get-username'),
+  exportPdf: (name) => ipcRenderer.invoke('export-pdf', name),
+  openPath: (p) => ipcRenderer.invoke('open-path', p),
   saveFile: (payload) => ipcRenderer.invoke('save-file', payload),
   openFile: () => ipcRenderer.invoke('open-file'),
   confirmDiscard: () => ipcRenderer.invoke('confirm-discard'),

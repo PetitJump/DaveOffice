@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 const { execFile, spawn } = require('child_process');
 
 const APP_VERSION = require('./package.json').version;
@@ -184,13 +185,49 @@ app.on('window-all-closed', () => {
 
 ipcMain.on('get-version', (e) => { e.returnValue = APP_VERSION; });
 
+ipcMain.on('get-username', (e) => {
+  try { e.returnValue = os.userInfo().username; } catch (err) { e.returnValue = ''; }
+});
+
 ipcMain.on('set-dirty', (e, d) => { isDirty = !!d; });
 
 ipcMain.on('win-control', (e, action) => {
   if (!win) return;
   if (action === 'min') win.minimize();
   else if (action === 'max') win.isMaximized() ? win.unmaximize() : win.maximize();
+  else if (action === 'fullscreen') win.setFullScreen(!win.isFullScreen());
   else if (action === 'close') win.close();
+});
+
+ipcMain.handle('export-pdf', async (e, suggestedName) => {
+  const r = await dialog.showSaveDialog(win, {
+    title: 'Exporter en PDF',
+    defaultPath: (suggestedName || 'Document1').replace(/\.(docx|html|htm|txt)$/i, '') + '.pdf',
+    filters: [{ name: 'Document PDF', extensions: ['pdf'] }]
+  });
+  if (r.canceled || !r.filePath) return { canceled: true };
+  try {
+    const data = await win.webContents.printToPDF({
+      pageSize: 'A4',
+      printBackground: true,
+      margins: { top: 0, bottom: 0, left: 0, right: 0 }
+    });
+    fs.writeFileSync(r.filePath, data);
+    return { canceled: false, filePath: r.filePath };
+  } catch (err) {
+    dialog.showErrorBox('Erreur d\'export PDF', String(err.message || err));
+    return { canceled: true, error: String(err) };
+  }
+});
+
+ipcMain.handle('open-path', async (e, p) => {
+  try {
+    if (!p || !fs.existsSync(p)) return { canceled: true, error: 'Fichier introuvable.' };
+    const html = await loadFileToHtml(p);
+    return { canceled: false, filePath: p, fileName: path.basename(p), html };
+  } catch (err) {
+    return { canceled: true, error: String(err.message || err) };
+  }
 });
 
 ipcMain.on('print', () => {

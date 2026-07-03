@@ -26,8 +26,8 @@
   </div>
   <div class="tb-title" id="doc-title-label">Document1 - DaveOffice</div>
   <div class="tb-right">
-    <span class="tb-user">Petit Jump</span>
-    <span class="tb-avatar">PJ</span>
+    <span class="tb-user" id="tb-user"></span>
+    <span class="tb-avatar" id="tb-avatar"></span>
     <button class="tb-btn win-btn" id="win-min" title="Réduire">
       <svg viewBox="0 0 16 16"><path d="M3 8h10" stroke="currentColor"/></svg>
     </button>
@@ -147,7 +147,7 @@
           <button class="sbtn toggle" id="btn-ol" title="Numérotation">
             <svg viewBox="0 0 16 16"><text x="1" y="6" font-size="5" fill="currentColor">1</text><text x="1" y="11" font-size="5" fill="currentColor">2</text><text x="1" y="16" font-size="5" fill="currentColor">3</text><path d="M6 4h8M6 9h8M6 14h8" stroke="currentColor"/></svg>
           </button>
-          <button class="sbtn" id="btn-mlist" title="Liste à plusieurs niveaux" disabled>
+          <button class="sbtn" id="btn-mlist" title="Liste à plusieurs niveaux (Tab / Maj+Tab dans une liste)">
             <svg viewBox="0 0 16 16"><rect x="1" y="2" width="2" height="2" fill="currentColor"/><path d="M5 3h9" stroke="currentColor"/><rect x="4" y="7" width="2" height="2" fill="currentColor"/><path d="M8 8h6" stroke="currentColor"/><rect x="7" y="12" width="2" height="2" fill="currentColor"/><path d="M11 13h3" stroke="currentColor"/></svg>
           </button>
           <span class="mini-sep"></span>
@@ -158,7 +158,7 @@
             <svg viewBox="0 0 16 16"><path d="M2 2h12M8 6h6M8 9h6M2 13h12" stroke="currentColor"/><path d="M2 5.5v5L5 8z" fill="currentColor"/></svg>
           </button>
           <span class="mini-sep"></span>
-          <button class="sbtn" id="btn-sort" title="Trier" disabled>
+          <button class="sbtn" id="btn-sort" title="Trier les paragraphes (A → Z)">
             <svg viewBox="0 0 16 16"><text x="1" y="7" font-size="6" fill="currentColor">A</text><text x="1" y="15" font-size="6" fill="currentColor">Z</text><path d="M11 3v10M9 11l2 2 2-2" fill="none" stroke="currentColor"/></svg>
           </button>
           <button class="sbtn toggle" id="btn-marks" title="Afficher tout (marques de paragraphe)">
@@ -183,10 +183,10 @@
             <svg viewBox="0 0 16 16"><path d="M8 3h6M8 6h6M8 9h6M8 12h6" stroke="currentColor"/><path d="M3.5 2v11M2 4l1.5-2L5 4M2 11l1.5 2L5 11" fill="none" stroke="currentColor"/></svg>
             <svg viewBox="0 0 16 16" class="mini-caret"><path d="M5 7l3 3 3-3" fill="none" stroke="currentColor"/></svg>
           </button>
-          <button class="sbtn" id="btn-shading" title="Trame de fond" disabled>
+          <button class="sbtn" id="btn-shading" title="Trame de fond (clic droit : choisir la couleur)">
             <svg viewBox="0 0 16 16"><path d="M8.2 1.8 13.4 7 8.6 11.8 3.4 6.6z" fill="#d9e2f3" stroke="#8a8886" stroke-width="0.8"/><path d="M3.4 6.6C2 8 1.4 9.6 2.3 10.5c.9.9 2.4.3 3.7-1.1" fill="none" stroke="#8a8886" stroke-width="0.8"/><path d="M13.6 8.6c.9 1.2 1.3 2.3.7 3-.6.6-1.6.4-2.1-.4-.4-.8 0-1.7 1.4-2.6z" fill="#4472c4"/><rect x="2" y="13.2" width="12" height="2" fill="#4472c4"/></svg>
           </button>
-          <button class="sbtn" id="btn-borders" title="Bordures" disabled>
+          <button class="sbtn" id="btn-borders" title="Bordures">
             <svg viewBox="0 0 16 16"><path d="M2.5 2.5h11M2.5 2.5v11M13.5 2.5v11M8 2.5v11M2.5 8h11" stroke="#c8c6c4" stroke-width="0.9" stroke-dasharray="1.6 1.2" fill="none"/><path d="M2 13.5h12" stroke="#444" stroke-width="1.8"/></svg>
           </button>
         </div>
@@ -299,6 +299,20 @@
     <div class="vsep"></div>
     <div class="rgroup">
       <div class="rgroup-content">
+        <button class="big-btn" id="btn-pagebreak" title="Saut de page (Ctrl+Entrée)">
+          <svg viewBox="0 0 32 32"><rect x="6" y="3" width="20" height="10" fill="#fff" stroke="#8a8886"/><rect x="6" y="19" width="20" height="10" fill="#fff" stroke="#8a8886"/><path d="M4 16h4M12 16h4M20 16h4M28 16h0" stroke="#4472c4" stroke-width="2" stroke-dasharray="4 3"/></svg>
+          <span class="big-label">Saut de page</span>
+        </button>
+        <button class="big-btn" id="btn-datetime" title="Insérer la date et l'heure">
+          <svg viewBox="0 0 32 32"><rect x="4" y="6" width="24" height="22" rx="2" fill="#fff" stroke="#8a8886"/><path d="M4 12h24" stroke="#8a8886"/><path d="M9 3v6M23 3v6" stroke="#4472c4" stroke-width="2"/><text x="9" y="25" font-size="9" fill="#4472c4">17</text></svg>
+          <span class="big-label">Date et heure</span>
+        </button>
+      </div>
+      <div class="rgroup-label">Pages et texte</div>
+    </div>
+    <div class="vsep"></div>
+    <div class="rgroup">
+      <div class="rgroup-content">
         <button class="big-btn" id="btn-symbol">
           <svg viewBox="0 0 32 32"><text x="8" y="24" font-size="22" fill="#605e5c">Ω</text></svg>
           <span class="big-label">Symbole</span>
@@ -311,7 +325,20 @@
 
   <!-- ===== CONCEPTION ===== -->
   <div class="panel" id="panel-conception">
-    <div class="rgroup"><div class="rgroup-content placeholder">Thèmes et mise en forme du document (non disponible)</div><div class="rgroup-label">Mise en forme du document</div></div>
+    <div class="rgroup">
+      <div class="rgroup-content">
+        <button class="big-btn" id="btn-pagecolor" title="Couleur de page">
+          <svg viewBox="0 0 32 32"><rect x="5" y="4" width="22" height="24" fill="#ffe9a8" stroke="#8a8886"/><path d="M9 10h14M9 15h14M9 20h10" stroke="#b58a4a"/></svg>
+          <span class="big-label">Couleur de page</span>
+          <svg viewBox="0 0 16 16" class="caret"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor"/></svg>
+        </button>
+        <button class="big-btn" id="btn-watermark" title="Filigrane">
+          <svg viewBox="0 0 32 32"><rect x="5" y="4" width="22" height="24" fill="#fff" stroke="#8a8886"/><text x="7" y="22" font-size="10" fill="#c8c6c4" transform="rotate(-30 16 16)">BROUILLON</text></svg>
+          <span class="big-label">Filigrane</span>
+        </button>
+      </div>
+      <div class="rgroup-label">Arrière-plan de la page</div>
+    </div>
   </div>
 
   <!-- ===== MISE EN PAGE ===== -->
@@ -326,6 +353,11 @@
         <button class="big-btn" id="btn-orientation">
           <svg viewBox="0 0 32 32"><rect x="5" y="7" width="13" height="18" fill="#fff" stroke="#8a8886"/><rect x="14" y="12" width="16" height="12" fill="#dbe8f9" stroke="#4472c4"/></svg>
           <span class="big-label">Orientation</span>
+          <svg viewBox="0 0 16 16" class="caret"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor"/></svg>
+        </button>
+        <button class="big-btn" id="btn-pagesize" title="Taille de la page">
+          <svg viewBox="0 0 32 32"><rect x="6" y="3" width="17" height="24" fill="#fff" stroke="#8a8886"/><rect x="10" y="8" width="17" height="21" fill="#fff" stroke="#4472c4"/></svg>
+          <span class="big-label">Taille</span>
           <svg viewBox="0 0 16 16" class="caret"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor"/></svg>
         </button>
       </div>
@@ -358,6 +390,16 @@
       </div>
       <div class="rgroup-label">Vérification</div>
     </div>
+    <div class="vsep"></div>
+    <div class="rgroup">
+      <div class="rgroup-content">
+        <button class="big-btn" id="btn-speak" title="Lire le document (ou la sélection) à voix haute">
+          <svg viewBox="0 0 32 32"><path d="M5 12v8h6l8 6V6l-8 6z" fill="#4472c4"/><path d="M23 10c2 1.5 3 3.5 3 6s-1 4.5-3 6M23 14c1 .7 1.5 1.3 1.5 2s-.5 1.3-1.5 2" fill="none" stroke="#4472c4" stroke-width="2"/></svg>
+          <span class="big-label">Lire à voix haute</span>
+        </button>
+      </div>
+      <div class="rgroup-label">Voix</div>
+    </div>
   </div>
 
   <!-- ===== AFFICHAGE ===== -->
@@ -374,6 +416,16 @@
         </button>
       </div>
       <div class="rgroup-label">Zoom</div>
+    </div>
+    <div class="vsep"></div>
+    <div class="rgroup">
+      <div class="rgroup-content">
+        <button class="big-btn" id="btn-fullscreen" title="Plein écran (F11)">
+          <svg viewBox="0 0 32 32"><rect x="4" y="6" width="24" height="20" rx="2" fill="none" stroke="#4472c4" stroke-width="2"/><path d="M9 15v-4h4M23 17v4h-4" fill="none" stroke="#4472c4" stroke-width="2"/></svg>
+          <span class="big-label">Plein écran</span>
+        </button>
+      </div>
+      <div class="rgroup-label">Fenêtre</div>
     </div>
   </div>
 
@@ -438,6 +490,7 @@
     <div class="bs-sep"></div>
     <button class="bs-item" id="bs-save">Enregistrer</button>
     <button class="bs-item" id="bs-saveas">Enregistrer sous</button>
+    <button class="bs-item" id="bs-pdf">Exporter en PDF</button>
     <button class="bs-item" id="bs-print">Imprimer</button>
     <div class="bs-sep"></div>
     <button class="bs-item" id="bs-close">Fermer</button>
@@ -446,6 +499,8 @@
     <h1>Bonjour</h1>
     <h2 id="bs-filename">Document1</h2>
     <p id="bs-filepath" class="bs-path">Document non enregistré</p>
+    <h3 class="bs-recents-title">Documents récents</h3>
+    <div id="bs-recents"></div>
   </div>
 </div>
 

@@ -460,6 +460,62 @@ svg { display: block; }
 #dropdown .dd-item:hover { background: #f3f2f1; }
 #dropdown .dd-sep { height: 1px; background: #e1dfdd; margin: 4px 0; }
 
+/* Filigrane */
+.watermark {
+  position: absolute;
+  top: 42%;
+  left: 0; right: 0;
+  text-align: center;
+  transform: rotate(-35deg);
+  font-family: "Calibri Light", Calibri, sans-serif;
+  font-size: 64pt;
+  color: rgba(120, 120, 120, 0.16);
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+/* Saut de page */
+#editor .page-break {
+  height: 0;
+  border-top: 1px dashed #c8c6c4;
+  margin: 12pt 0;
+  page-break-after: always;
+}
+
+/* Documents récents (backstage) */
+.bs-recents-title {
+  font-weight: 400;
+  font-size: 15px;
+  color: #323130;
+  margin: 30px 0 8px;
+}
+.bs-recent {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  text-align: left;
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+.bs-recent:hover { background: #e1dfdd; }
+.bs-recent .rn { font-size: 13.5px; color: #2b579a; }
+.bs-recent .rp { font-size: 11.5px; color: #605e5c; display: block; }
+.bs-empty { color: #a19f9d; font-size: 12.5px; }
+
+/* Impression / export PDF : seulement la page */
+@media print {
+  #titlebar, #ribbon-tabs, #ribbon-body, #statusbar,
+  #find-panel, #backstage, #dropdown { display: none !important; }
+  body, #workspace { background: #fff; overflow: visible; }
+  #workspace { padding: 0; }
+  #page-wrap { display: block; zoom: 1 !important; }
+  #page { box-shadow: none; min-height: 0; }
+  #page::before, #page::after { display: none; }
+  #editor .page-break { border-top: none; }
+}
+
 /* Scrollbars discrets */
 ::-webkit-scrollbar { width: 14px; height: 14px; }
 ::-webkit-scrollbar-thumb { background: #c8c6c4; border: 3px solid #e8e8e8; border-radius: 8px; }
