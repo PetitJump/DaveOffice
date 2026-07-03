@@ -978,6 +978,14 @@
     const u = await api.doUpdate();
     if (u && u.error) alert('Échec de la mise à jour :\n' + u.error);
   });
+  document.getElementById('btn-uninstall').addEventListener('click', async () => {
+    const ok = confirm('Désinstaller DaveOffice de cet ordinateur ?\n\nSeront supprimés : l\'application, les raccourcis, les entrées du registre et l\'exclusion antivirus.\nVos documents (.docx) ne sont PAS supprimés.');
+    if (!ok) return;
+    if (dirty && !(await api.confirmDiscard())) return;
+    const r = await api.uninstall();
+    if (r && r.error) alert('Désinstallation impossible :\n' + r.error);
+  });
+
   document.getElementById('about-text').textContent =
     `DaveOffice ${api.appVersion} — ` + document.getElementById('about-text').textContent.replace(/^DaveOffice — /, '');
 

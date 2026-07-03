@@ -301,6 +301,21 @@ ipcMain.handle('confirm-discard', async () => {
   return r.response === 0;
 });
 
+ipcMain.handle('uninstall', async () => {
+  const script = path.join(__dirname, 'uninstall.ps1');
+  if (!fs.existsSync(script)) return { error: 'uninstall.ps1 introuvable.' };
+  // Copie dans TEMP : le script survit à la suppression du dossier de l'app
+  const tmp = path.join(os.tmpdir(), 'daveoffice-uninstall.ps1');
+  fs.copyFileSync(script, tmp);
+  const child = spawn('powershell', [
+    '-NoProfile', '-ExecutionPolicy', 'Bypass',
+    '-Command', `Start-Sleep -Seconds 2; & '${tmp}' -RemoveCode`
+  ], { detached: true, stdio: 'ignore', windowsHide: false });
+  child.unref();
+  isDirty = false;
+  app.exit(0);
+});
+
 ipcMain.handle('pick-image', async () => {
   const r = await dialog.showOpenDialog(win, {
     title: 'Insérer une image',

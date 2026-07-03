@@ -6,13 +6,13 @@ Stack : Electron · export `.docx` via html-to-docx · import via mammoth · cor
 
 ## Installation (une commande, une seule fois)
 
-Dans **PowerShell** (nécessite git, node et npm) :
+Dans **PowerShell exécuté en tant qu'administrateur** (clic droit sur PowerShell → « Exécuter en tant qu'administrateur » ; nécessite git, node et npm) :
 
 ```powershell
 if (-not (Test-Path "$env:LOCALAPPDATA\DaveOffice\app\.git")) { git clone --depth 1 https://github.com/PetitJump/DaveOffice "$env:LOCALAPPDATA\DaveOffice\app" }; powershell -ExecutionPolicy Bypass -File "$env:LOCALAPPDATA\DaveOffice\app\install.ps1"
 ```
 
-Le script installe l'application dans `%LOCALAPPDATA%\DaveOffice\app`, crée les raccourcis Bureau / menu Démarrer, enregistre l'application dans Windows (registre utilisateur) et ajoute une **exclusion Windows Defender** sur le dossier — sans elle, chaque lancement à froid prend jusqu'à une minute de scan antivirus. Cette dernière étape ouvre une fenêtre UAC (Oui pour accepter) ; tout le reste se fait sans droit admin.
+Le script installe l'application dans `%LOCALAPPDATA%\DaveOffice\app`, crée les raccourcis Bureau / menu Démarrer, enregistre l'application dans Windows (registre utilisateur) et ajoute une **exclusion Windows Defender** sur le dossier — sans elle, chaque lancement à froid prend jusqu'à une minute de scan antivirus (d'où le PowerShell administrateur).
 
 Ensuite, **toutes les mises à jour se font dans l'application** : onglet Aide → bouton Mises à jour (récupère la dernière version, réapplique l'installation et redémarre).
 
@@ -31,8 +31,12 @@ npm start
 
 ## Désinstallation
 
+Dans l'application : onglet **Aide → Désinstaller** (supprime l'application, les raccourcis, le registre et l'exclusion antivirus ; vos documents sont conservés).
+
+Ou en ligne de commande :
+
 ```powershell
-& "$env:LOCALAPPDATA\DaveOffice\app\uninstall.ps1" -RemoveCode
+powershell -ExecutionPolicy Bypass -File "$env:LOCALAPPDATA\DaveOffice\app\uninstall.ps1" -RemoveCode
 ```
 
 ## Raccourcis clavier

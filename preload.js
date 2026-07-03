@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld('daveAPI', {
   pickImage: () => ipcRenderer.invoke('pick-image'),
   checkUpdates: () => ipcRenderer.invoke('check-updates'),
   doUpdate: () => ipcRenderer.invoke('do-update'),
+  uninstall: () => ipcRenderer.invoke('uninstall'),
   setDirty: (d) => ipcRenderer.send('set-dirty', d),
   winControl: (action) => ipcRenderer.send('win-control', action),
   print: () => ipcRenderer.send('print'),
