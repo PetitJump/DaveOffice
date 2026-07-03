@@ -43,6 +43,15 @@ if ($npmExit -ne 0) { throw 'npm install a echoue.' }
 $Electron = Join-Path $AppDir 'node_modules\electron\dist\electron.exe'
 $Icon     = Join-Path $AppDir 'assets\icon.ico'
 $Template = Join-Path $AppDir 'assets\template.docx'
+
+# Le postinstall d'Electron (telechargement du binaire) est parfois saute :
+# on le relance explicitement si dist\electron.exe manque.
+if (-not (Test-Path $Electron)) {
+    Write-Host 'Binaire Electron manquant, telechargement...'
+    Push-Location (Join-Path $AppDir 'node_modules\electron')
+    node install.js
+    Pop-Location
+}
 if (-not (Test-Path $Electron)) { throw "electron.exe introuvable ($Electron)." }
 
 # --- 4. Raccourcis (menu Demarrer + Bureau) ---
