@@ -44,7 +44,6 @@
   document.addEventListener('selectionchange', () => {
     saveSelection();
     syncToolbar();
-    updateStatus();
   });
 
   function exec(cmd, val = null) {
@@ -899,7 +898,7 @@
   editor.addEventListener('input', () => {
     setDirty(true);
     clearTimeout(statusTimer);
-    statusTimer = setTimeout(updateStatus, 150);
+    statusTimer = setTimeout(updateStatus, 600);
   });
 
   // ---------- Raccourcis clavier ----------
