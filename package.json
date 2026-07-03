@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron ."
   },
-  "author": "Killian",
+  "author": "PetitJump",
   "license": "UNLICENSED",
   "private": true,
   "devDependencies": {

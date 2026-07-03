@@ -173,7 +173,7 @@ function createWindow() {
   win.on('unmaximize', () => win.webContents.send('window-state', 'normal'));
 }
 
-app.setAppUserModelId('com.killian.daveoffice');
+app.setAppUserModelId('com.petitjump.daveoffice');
 
 app.whenReady().then(createWindow);
 

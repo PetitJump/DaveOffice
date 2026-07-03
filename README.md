@@ -6,7 +6,15 @@ Stack : Electron · export `.docx` via html-to-docx · import via mammoth · cor
 
 ## Installation (une commande, une seule fois)
 
-Dans **PowerShell exécuté en tant qu'administrateur** (clic droit sur PowerShell → « Exécuter en tant qu'administrateur » ; nécessite git, node et npm) :
+**Prérequis** : git, node et npm. S'il vous manque l'un des trois, lancez d'abord cette commande dans PowerShell, puis **fermez et rouvrez PowerShell** :
+
+```powershell
+if (-not (Get-Command git -ErrorAction SilentlyContinue)) { winget install --id Git.Git -e --accept-package-agreements --accept-source-agreements }; if (-not (Get-Command node -ErrorAction SilentlyContinue)) { winget install --id OpenJS.NodeJS.LTS -e --accept-package-agreements --accept-source-agreements }
+```
+
+(npm est inclus avec Node.js.)
+
+Ensuite, dans **PowerShell exécuté en tant qu'administrateur** (clic droit sur PowerShell → « Exécuter en tant qu'administrateur ») :
 
 ```powershell
 if (-not (Test-Path "$env:LOCALAPPDATA\DaveOffice\app\.git")) { git clone --depth 1 https://github.com/PetitJump/DaveOffice "$env:LOCALAPPDATA\DaveOffice\app" }; powershell -ExecutionPolicy Bypass -File "$env:LOCALAPPDATA\DaveOffice\app\install.ps1"
