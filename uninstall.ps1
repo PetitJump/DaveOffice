@@ -26,6 +26,8 @@ foreach ($k in $keys) {
     if (Test-Path $k) { Remove-Item -Recurse -Force $k; Write-Host "Supprime : $k" }
 }
 try { Remove-ItemProperty 'HKCU:\Software\Classes\.docx\OpenWithProgids' -Name 'DaveOffice.Document' -ErrorAction Stop } catch {}
+$docxDefault = (Get-ItemProperty 'HKCU:\Software\Classes\.docx' -ErrorAction SilentlyContinue).'(default)'
+if ($docxDefault -eq 'DaveOffice.Document') { reg delete 'HKCU\Software\Classes\.docx' /ve /f | Out-Null }
 try { Remove-ItemProperty 'HKCU:\Software\RegisteredApplications' -Name 'DaveOffice' -ErrorAction Stop } catch {}
 
 # Code

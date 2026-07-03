@@ -88,6 +88,10 @@ Set-ItemProperty "$classes\DaveOffice.Document\shell\open\command" -Name '(Defau
 New-Item -Force "$classes\.docx\OpenWithProgids" | Out-Null
 New-ItemProperty -Force -Path "$classes\.docx\OpenWithProgids" -Name 'DaveOffice.Document' -Value '' -PropertyType String | Out-Null
 
+# Nom de type affiche (menu Nouveau, Explorateur) : HKCU prime sur HKLM,
+# le libelle devient "Document DaveOffice" au lieu de celui de Word
+Set-ItemProperty "$classes\.docx" -Name '(Default)' -Value 'DaveOffice.Document'
+
 # Clic droit > Nouveau > Document DaveOffice (actif quand DaveOffice est
 # l'application par defaut des .docx ; utilise le modele vierge du depot)
 New-Item -Force "$classes\.docx\DaveOffice.Document\ShellNew" | Out-Null
