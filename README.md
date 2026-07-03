@@ -9,7 +9,7 @@ Stack : Electron · export `.docx` via html-to-docx · import via mammoth · cor
 Dans **PowerShell** (nécessite git, node et npm) :
 
 ```powershell
-if (-not (Test-Path "$env:LOCALAPPDATA\DaveOffice\app\.git")) { git clone --depth 1 https://github.com/PetitJump/DaveOffice "$env:LOCALAPPDATA\DaveOffice\app" }; & "$env:LOCALAPPDATA\DaveOffice\app\install.ps1"
+if (-not (Test-Path "$env:LOCALAPPDATA\DaveOffice\app\.git")) { git clone --depth 1 https://github.com/PetitJump/DaveOffice "$env:LOCALAPPDATA\DaveOffice\app" }; powershell -ExecutionPolicy Bypass -File "$env:LOCALAPPDATA\DaveOffice\app\install.ps1"
 ```
 
 Le script installe l'application dans `%LOCALAPPDATA%\DaveOffice\app`, crée les raccourcis Bureau / menu Démarrer et enregistre l'application dans Windows (registre utilisateur, aucun droit admin).
