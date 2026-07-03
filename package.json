@@ -1,6 +1,6 @@
 {
   "name": "daveoffice",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Traitement de texte de bureau - usage personnel",
   "main": "main.js",
   "scripts": {
