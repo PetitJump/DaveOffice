@@ -298,23 +298,8 @@ function cmpVersion(a, b) {
   return 0;
 }
 
-function getAutoUpdater() {
-  const { autoUpdater } = require('electron-updater');
-  autoUpdater.autoDownload = false;
-  autoUpdater.autoInstallOnAppQuit = false;
-  return autoUpdater;
-}
-
 ipcMain.handle('check-updates', async () => {
   try {
-    if (app.isPackaged) {
-      // Version installee par le Setup : interroge les releases GitHub
-      const updater = getAutoUpdater();
-      const r = await updater.checkForUpdates();
-      const latest = (r && r.updateInfo && r.updateInfo.version) || APP_VERSION;
-      return { current: APP_VERSION, latest, upToDate: cmpVersion(latest, APP_VERSION) <= 0 };
-    }
-    // Version git : compare aux tags du depot
     const out = await runGit(['ls-remote', '--tags', 'origin']);
     const tags = [...out.matchAll(/refs\/tags\/v?(\d+\.\d+\.\d+)\s*$/gm)].map((m) => m[1]);
     if (!tags.length) return { current: APP_VERSION, latest: APP_VERSION, upToDate: true };
@@ -328,15 +313,6 @@ ipcMain.handle('check-updates', async () => {
 
 ipcMain.handle('do-update', async () => {
   try {
-    if (app.isPackaged) {
-      // Telecharge la release GitHub puis reinstalle et redemarre
-      const updater = getAutoUpdater();
-      await updater.checkForUpdates();
-      await updater.downloadUpdate();
-      isDirty = false;
-      updater.quitAndInstall(true, true);
-      return;
-    }
     const run = (cmd, args) => new Promise((resolve, reject) => {
       const p = spawn(cmd, args, { cwd: __dirname, shell: true, windowsHide: true });
       let errOut = '';

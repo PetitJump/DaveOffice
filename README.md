@@ -4,11 +4,9 @@ Traitement de texte de bureau (Windows) reprenant l'interface de Word. Usage str
 
 Stack : Electron · export `.docx` via html-to-docx · import via mammoth · correcteur orthographique français intégré (Chromium).
 
-## Installation
+## Installation (une commande, une seule fois)
 
-**Option A — Setup.exe (recommandé, aucun prérequis)** : télécharger `DaveOffice-Setup-X.Y.Z.exe` dans les [releases](https://github.com/PetitJump/DaveOffice/releases), double-cliquer. Installe l'application, l'icône, l'association `.docx` et le menu « Nouveau → Document DaveOffice ». Aucun droit admin.
-
-**Option B — Une commande PowerShell** (nécessite git, node et npm) :
+Dans **PowerShell** (nécessite git, node et npm) :
 
 ```powershell
 if (-not (Test-Path "$env:LOCALAPPDATA\DaveOffice\app\.git")) { git clone --depth 1 https://github.com/PetitJump/DaveOffice "$env:LOCALAPPDATA\DaveOffice\app" }; powershell -ExecutionPolicy Bypass -File "$env:LOCALAPPDATA\DaveOffice\app\install.ps1"
@@ -16,7 +14,7 @@ if (-not (Test-Path "$env:LOCALAPPDATA\DaveOffice\app\.git")) { git clone --dept
 
 Le script installe l'application dans `%LOCALAPPDATA%\DaveOffice\app`, crée les raccourcis Bureau / menu Démarrer et enregistre l'application dans Windows (registre utilisateur, aucun droit admin).
 
-Dans les deux cas, les mises à jour se font ensuite **dans l'application** : onglet Aide → bouton Mises à jour (version Setup : télécharge la nouvelle release et se réinstalle ; version git : se met à jour et se relance).
+Ensuite, **toutes les mises à jour se font dans l'application** : onglet Aide → bouton Mises à jour (récupère la dernière version, réapplique l'installation et redémarre).
 
 ## Intégration Windows
 
