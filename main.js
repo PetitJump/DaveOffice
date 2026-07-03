@@ -182,6 +182,8 @@ app.on('window-all-closed', () => {
 
 // --- IPC ---
 
+ipcMain.on('get-version', (e) => { e.returnValue = APP_VERSION; });
+
 ipcMain.on('set-dirty', (e, d) => { isDirty = !!d; });
 
 ipcMain.on('win-control', (e, action) => {

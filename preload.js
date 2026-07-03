@@ -1,7 +1,7 @@
 const { contextBridge, ipcRenderer, clipboard } = require('electron');
 
 contextBridge.exposeInMainWorld('daveAPI', {
-  appVersion: require('./package.json').version,
+  appVersion: ipcRenderer.sendSync('get-version'),
   saveFile: (payload) => ipcRenderer.invoke('save-file', payload),
   openFile: () => ipcRenderer.invoke('open-file'),
   confirmDiscard: () => ipcRenderer.invoke('confirm-discard'),
