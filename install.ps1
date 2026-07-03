@@ -23,8 +23,12 @@ foreach ($tool in @('git', 'node', 'npm')) {
 # --- 2. Code source ---
 if (Test-Path (Join-Path $AppDir '.git')) {
     Write-Host "Code deja present, mise a jour ($AppDir)..."
-    git -C $AppDir pull --ff-only
-    if ($LASTEXITCODE -ne 0) { throw 'git pull a echoue.' }
+    # Copie deployee : on ecrase les modifs locales (ex. package-lock.json
+    # reecrit par npm install) au lieu d'un pull qui refuserait
+    git -C $AppDir fetch origin
+    if ($LASTEXITCODE -ne 0) { throw 'git fetch a echoue.' }
+    git -C $AppDir reset --hard origin/main
+    if ($LASTEXITCODE -ne 0) { throw 'git reset a echoue.' }
 } else {
     Write-Host "Telechargement du code vers $AppDir..."
     New-Item -ItemType Directory -Force $Root | Out-Null
