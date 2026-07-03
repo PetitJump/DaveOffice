@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+<title>Document1 - DaveOffice</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ============ BARRE DE TITRE ============ -->
+<header id="titlebar">
+  <div class="qat">
+    <button class="tb-btn" id="qat-save" title="Enregistrer (Ctrl+S)">
+      <svg viewBox="0 0 16 16"><path d="M2 2h9l3 3v9H2z" fill="none" stroke="currentColor"/><path d="M5 2v4h5V2M4 9h8v5H4z" fill="none" stroke="currentColor"/></svg>
+    </button>
+    <button class="tb-btn" id="qat-undo" title="Annuler (Ctrl+Z)">
+      <svg viewBox="0 0 16 16"><path d="M5 3 2 6l3 3" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M2 6h8a4 4 0 0 1 0 8H6" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+    </button>
+    <button class="tb-btn" id="qat-redo" title="Rétablir (Ctrl+Y)">
+      <svg viewBox="0 0 16 16"><path d="M11 3l3 3-3 3" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M14 6H6a4 4 0 0 0 0 8h4" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+    </button>
+    <button class="tb-btn caret-only" title="Personnaliser la barre d'outils Accès rapide">
+      <svg viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor"/></svg>
+    </button>
+  </div>
+  <div class="tb-title" id="doc-title-label">Document1 - DaveOffice</div>
+  <div class="tb-right">
+    <span class="tb-user">Petit Jump</span>
+    <span class="tb-avatar">PJ</span>
+    <button class="tb-btn win-btn" id="win-min" title="Réduire">
+      <svg viewBox="0 0 16 16"><path d="M3 8h10" stroke="currentColor"/></svg>
+    </button>
+    <button class="tb-btn win-btn" id="win-max" title="Agrandir">
+      <svg viewBox="0 0 16 16"><rect x="3.5" y="3.5" width="9" height="9" fill="none" stroke="currentColor"/></svg>
+    </button>
+    <button class="tb-btn win-btn close" id="win-close" title="Fermer">
+      <svg viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- ============ ONGLETS RUBAN ============ -->
+<nav id="ribbon-tabs">
+  <button class="rtab file-tab" data-tab="fichier">Fichier</button>
+  <button class="rtab active" data-tab="accueil">Accueil</button>
+  <button class="rtab" data-tab="insertion">Insertion</button>
+  <button class="rtab" data-tab="conception">Conception</button>
+  <button class="rtab" data-tab="miseenpage">Mise en page</button>
+  <button class="rtab" data-tab="references">Références</button>
+  <button class="rtab" data-tab="publipostage">Publipostage</button>
+  <button class="rtab" data-tab="revision">Révision</button>
+  <button class="rtab" data-tab="affichage">Affichage</button>
+  <button class="rtab" data-tab="aide">Aide</button>
+  <div class="tellme">
+    <svg viewBox="0 0 16 16" class="bulb"><path d="M8 1a4.5 4.5 0 0 0-2.5 8.2c.5.4.5 1 .5 1.8h4c0-.8 0-1.4.5-1.8A4.5 4.5 0 0 0 8 1z" fill="none" stroke="currentColor"/><path d="M6.5 12.5h3M7 14.5h2" stroke="currentColor"/></svg>
+    <span>Rechercher des outils adaptés</span>
+  </div>
+  <div class="tabs-right">
+    <button class="share-btn">
+      <svg viewBox="0 0 16 16"><path d="M8 10V2M5 4.5 8 1.5l3 3" fill="none" stroke="currentColor"/><path d="M3 8v6h10V8" fill="none" stroke="currentColor"/></svg>
+      Partager
+      <svg viewBox="0 0 16 16" class="caret"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- ============ CONTENU RUBAN ============ -->
+<div id="ribbon-body">
+
+  <!-- ===== ACCUEIL ===== -->
+  <div class="panel active" id="panel-accueil">
+
+    <!-- Presse-papiers -->
+    <div class="rgroup">
+      <div class="rgroup-content">
+        <button class="big-btn" id="btn-paste" title="Coller (Ctrl+V)">
+          <svg viewBox="0 0 32 32"><rect x="7" y="4" width="18" height="25" rx="1.5" fill="#f5d7a8" stroke="#b58a4a"/><rect x="9" y="7" width="14" height="20" fill="#fff" stroke="#c8c6c4"/><rect x="12" y="2" width="8" height="5" rx="1" fill="#8a8886" stroke="#605e5c"/><path d="M12 12h8M12 15h8M12 18h6" stroke="#a0a0a0"/></svg>
+          <span class="big-label">Coller</span>
+          <svg viewBox="0 0 16 16" class="caret"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor"/></svg>
+        </button>
+        <div class="small-col">
+          <button class="sbtn wide" id="btn-cut" title="Couper (Ctrl+X)">
+            <svg viewBox="0 0 16 16"><path d="M12.6 1.4 6.9 9.2M3.4 1.4l5.7 7.8" stroke="#4472c4" stroke-width="1.3" fill="none" stroke-linecap="round"/><circle cx="4.1" cy="11.9" r="2.1" fill="none" stroke="#4472c4" stroke-width="1.3"/><circle cx="11.9" cy="11.9" r="2.1" fill="none" stroke="#4472c4" stroke-width="1.3"/></svg>
+          </button>
+          <button class="sbtn wide" id="btn-copy" title="Copier (Ctrl+C)">
+            <svg viewBox="0 0 16 16"><path d="M2 1.5h5.5L10 4v8H2z" fill="#fff" stroke="#7a7876" stroke-width="0.9"/><path d="M7.5 1.5V4H10" fill="none" stroke="#7a7876" stroke-width="0.9"/><path d="M6 4.5h5.5L14 7v7.5H6z" fill="#fff" stroke="#7a7876" stroke-width="0.9"/><path d="M11.5 4.5V7H14" fill="none" stroke="#7a7876" stroke-width="0.9"/><path d="M7.5 9h5M7.5 11h5M7.5 13h3.5" stroke="#c8c6c4" stroke-width="0.8"/></svg>
+          </button>
+          <button class="sbtn wide" id="btn-painter" title="Reproduire la mise en forme">
+            <svg viewBox="0 0 16 16"><path d="M14 2.2 8.8 7.4" stroke="#8a8886" stroke-width="1"/><path d="M10.2 3.6l2.2 2.2-1.6 1.6-2.2-2.2z" fill="#c8ccd1" stroke="#8a8886" stroke-width="0.7"/><path d="M8.6 5.2 3.8 10l2.2 2.2 4.8-4.8z" fill="#f6c445" stroke="#c99b17" stroke-width="0.7"/><path d="M3.8 10c-1.2 1.2-1 2.6-2.6 3.4 1.8 1 3.8.6 4.8-1.2z" fill="#7a5c3e" stroke="#5c452e" stroke-width="0.6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="rgroup-label">Presse-papiers <span class="launcher" title="Options du Presse-papiers"><svg viewBox="0 0 10 10"><path d="M2 2h4M2 2v4M4 4l4 4M8 5v3H5" fill="none" stroke="currentColor" stroke-width="0.9"/></svg></span></div>
+    </div>
+    <div class="vsep"></div>
+
+    <!-- Police -->
+    <div class="rgroup">
+      <div class="rgroup-content col">
+        <div class="rrow">
+          <select id="font-name" class="rselect" title="Police">
+            <option>Calibri</option><option>Calibri Light</option><option>Arial</option>
+            <option>Times New Roman</option><option>Georgia</option><option>Verdana</option>
+            <option>Segoe UI</option><option>Cambria</option><option>Garamond</option>
+            <option>Courier New</option><option>Trebuchet MS</option><option>Comic Sans MS</option><option>Impact</option>
+          </select>
+          <select id="font-size" class="rselect size" title="Taille de police">
+            <option>8</option><option>9</option><option>10</option><option selected>11</option>
+            <option>12</option><option>14</option><option>16</option><option>18</option>
+            <option>20</option><option>22</option><option>24</option><option>26</option>
+            <option>28</option><option>36</option><option>48</option><option>72</option>
+          </select>
+          <button class="sbtn" id="btn-grow" title="Agrandir la police"><span class="glyph">A<sup>ˆ</sup></span></button>
+          <button class="sbtn" id="btn-shrink" title="Réduire la police"><span class="glyph">A<sub>ˇ</sub></span></button>
+          <button class="sbtn" id="btn-case" title="Modifier la casse"><span class="glyph">Aa</span><svg viewBox="0 0 16 16" class="mini-caret"><path d="M5 7l3 3 3-3" fill="none" stroke="currentColor"/></svg></button>
+          <button class="sbtn" id="btn-clear" title="Effacer toute la mise en forme"><span class="glyph clear-a">A</span><svg viewBox="0 0 16 16" class="eraser"><path d="M9 12l4-4-3-3-4 4z M6 9l3 3H6z" fill="#f4b8c1" stroke="#c86478" stroke-width="0.8"/></svg></button>
+        </div>
+        <div class="rrow">
+          <button class="sbtn toggle" id="btn-bold" title="Gras (Ctrl+G)"><span class="glyph bold">G</span></button>
+          <button class="sbtn toggle" id="btn-italic" title="Italique (Ctrl+I)"><span class="glyph italic">I</span></button>
+          <button class="sbtn toggle" id="btn-underline" title="Souligné (Ctrl+U)"><span class="glyph underline">S</span></button>
+          <button class="sbtn toggle" id="btn-strike" title="Barré"><span class="glyph strike">abe</span></button>
+          <button class="sbtn toggle" id="btn-sub" title="Indice"><span class="glyph">X<sub>2</sub></span></button>
+          <button class="sbtn toggle" id="btn-sup" title="Exposant"><span class="glyph">X<sup>2</sup></span></button>
+          <span class="mini-sep"></span>
+          <button class="sbtn" id="btn-effects" title="Effets de texte" disabled><span class="glyph effect-a">A</span></button>
+          <button class="sbtn split" id="btn-highlight" title="Couleur de surbrillance du texte">
+            <span class="glyph-stack"><svg viewBox="0 0 16 16"><path d="M3 10 10 3l3 3-7 7H3z" fill="#e8e6e3" stroke="#8a8886"/><path d="M10 3l3 3" stroke="#8a8886"/></svg><span class="color-bar" id="highlight-bar" style="background:#ffff00"></span></span>
+          </button>
+          <button class="sbtn split" id="btn-forecolor" title="Couleur de police">
+            <span class="glyph-stack"><span class="glyph color-a">A</span><span class="color-bar" id="forecolor-bar" style="background:#c00000"></span></span>
+          </button>
+        </div>
+      </div>
+      <div class="rgroup-label">Police <span class="launcher"><svg viewBox="0 0 10 10"><path d="M2 2h4M2 2v4M4 4l4 4M8 5v3H5" fill="none" stroke="currentColor" stroke-width="0.9"/></svg></span></div>
+    </div>
+    <div class="vsep"></div>
+
+    <!-- Paragraphe -->
+    <div class="rgroup">
+      <div class="rgroup-content col">
+        <div class="rrow">
+          <button class="sbtn toggle" id="btn-ul" title="Puces">
+            <svg viewBox="0 0 16 16"><circle cx="3" cy="4" r="1.2" fill="currentColor"/><circle cx="3" cy="8" r="1.2" fill="currentColor"/><circle cx="3" cy="12" r="1.2" fill="currentColor"/><path d="M6 4h8M6 8h8M6 12h8" stroke="currentColor"/></svg>
+          </button>
+          <button class="sbtn toggle" id="btn-ol" title="Numérotation">
+            <svg viewBox="0 0 16 16"><text x="1" y="6" font-size="5" fill="currentColor">1</text><text x="1" y="11" font-size="5" fill="currentColor">2</text><text x="1" y="16" font-size="5" fill="currentColor">3</text><path d="M6 4h8M6 9h8M6 14h8" stroke="currentColor"/></svg>
+          </button>
+          <button class="sbtn" id="btn-mlist" title="Liste à plusieurs niveaux" disabled>
+            <svg viewBox="0 0 16 16"><rect x="1" y="2" width="2" height="2" fill="currentColor"/><path d="M5 3h9" stroke="currentColor"/><rect x="4" y="7" width="2" height="2" fill="currentColor"/><path d="M8 8h6" stroke="currentColor"/><rect x="7" y="12" width="2" height="2" fill="currentColor"/><path d="M11 13h3" stroke="currentColor"/></svg>
+          </button>
+          <span class="mini-sep"></span>
+          <button class="sbtn" id="btn-outdent" title="Diminuer le retrait">
+            <svg viewBox="0 0 16 16"><path d="M2 2h12M8 6h6M8 9h6M2 13h12" stroke="currentColor"/><path d="M5 5.5v5L2 8z" fill="currentColor"/></svg>
+          </button>
+          <button class="sbtn" id="btn-indent" title="Augmenter le retrait">
+            <svg viewBox="0 0 16 16"><path d="M2 2h12M8 6h6M8 9h6M2 13h12" stroke="currentColor"/><path d="M2 5.5v5L5 8z" fill="currentColor"/></svg>
+          </button>
+          <span class="mini-sep"></span>
+          <button class="sbtn" id="btn-sort" title="Trier" disabled>
+            <svg viewBox="0 0 16 16"><text x="1" y="7" font-size="6" fill="currentColor">A</text><text x="1" y="15" font-size="6" fill="currentColor">Z</text><path d="M11 3v10M9 11l2 2 2-2" fill="none" stroke="currentColor"/></svg>
+          </button>
+          <button class="sbtn toggle" id="btn-marks" title="Afficher tout (marques de paragraphe)">
+            <span class="glyph">¶</span>
+          </button>
+        </div>
+        <div class="rrow">
+          <button class="sbtn toggle" id="btn-left" title="Aligner à gauche">
+            <svg viewBox="0 0 16 16"><path d="M2 3h12M2 6h8M2 9h12M2 12h8" stroke="currentColor"/></svg>
+          </button>
+          <button class="sbtn toggle" id="btn-center" title="Centrer">
+            <svg viewBox="0 0 16 16"><path d="M2 3h12M4 6h8M2 9h12M4 12h8" stroke="currentColor"/></svg>
+          </button>
+          <button class="sbtn toggle" id="btn-right" title="Aligner à droite">
+            <svg viewBox="0 0 16 16"><path d="M2 3h12M6 6h8M2 9h12M6 12h8" stroke="currentColor"/></svg>
+          </button>
+          <button class="sbtn toggle" id="btn-justify" title="Justifier">
+            <svg viewBox="0 0 16 16"><path d="M2 3h12M2 6h12M2 9h12M2 12h12" stroke="currentColor"/></svg>
+          </button>
+          <span class="mini-sep"></span>
+          <button class="sbtn" id="btn-spacing" title="Interligne et espacement de paragraphe">
+            <svg viewBox="0 0 16 16"><path d="M8 3h6M8 6h6M8 9h6M8 12h6" stroke="currentColor"/><path d="M3.5 2v11M2 4l1.5-2L5 4M2 11l1.5 2L5 11" fill="none" stroke="currentColor"/></svg>
+            <svg viewBox="0 0 16 16" class="mini-caret"><path d="M5 7l3 3 3-3" fill="none" stroke="currentColor"/></svg>
+          </button>
+          <button class="sbtn" id="btn-shading" title="Trame de fond" disabled>
+            <svg viewBox="0 0 16 16"><path d="M8.2 1.8 13.4 7 8.6 11.8 3.4 6.6z" fill="#d9e2f3" stroke="#8a8886" stroke-width="0.8"/><path d="M3.4 6.6C2 8 1.4 9.6 2.3 10.5c.9.9 2.4.3 3.7-1.1" fill="none" stroke="#8a8886" stroke-width="0.8"/><path d="M13.6 8.6c.9 1.2 1.3 2.3.7 3-.6.6-1.6.4-2.1-.4-.4-.8 0-1.7 1.4-2.6z" fill="#4472c4"/><rect x="2" y="13.2" width="12" height="2" fill="#4472c4"/></svg>
+          </button>
+          <button class="sbtn" id="btn-borders" title="Bordures" disabled>
+            <svg viewBox="0 0 16 16"><path d="M2.5 2.5h11M2.5 2.5v11M13.5 2.5v11M8 2.5v11M2.5 8h11" stroke="#c8c6c4" stroke-width="0.9" stroke-dasharray="1.6 1.2" fill="none"/><path d="M2 13.5h12" stroke="#444" stroke-width="1.8"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="rgroup-label">Paragraphe <span class="launcher"><svg viewBox="0 0 10 10"><path d="M2 2h4M2 2v4M4 4l4 4M8 5v3H5" fill="none" stroke="currentColor" stroke-width="0.9"/></svg></span></div>
+    </div>
+    <div class="vsep"></div>
+
+    <!-- Styles -->
+    <div class="rgroup grow">
+      <div class="rgroup-content">
+        <div class="styles-gallery" id="styles-gallery">
+          <button class="style-card active" data-style="normal">
+            <span class="preview" style="font-family:Calibri;font-size:13px;">AaBbCcDc</span>
+            <span class="sname">¶ Normal</span>
+          </button>
+          <button class="style-card" data-style="nospacing">
+            <span class="preview" style="font-family:Calibri;font-size:13px;">AaBbCcDc</span>
+            <span class="sname">¶ Sans int...</span>
+          </button>
+          <button class="style-card" data-style="h1">
+            <span class="preview" style="font-family:'Calibri Light',Calibri;font-size:16px;color:#2F5496;">AaBbC(</span>
+            <span class="sname">Titre 1</span>
+          </button>
+          <button class="style-card" data-style="h2">
+            <span class="preview" style="font-family:'Calibri Light',Calibri;font-size:14px;color:#2F5496;">AaBbCc</span>
+            <span class="sname">Titre 2</span>
+          </button>
+          <button class="style-card" data-style="title">
+            <span class="preview" style="font-family:'Calibri Light',Calibri;font-size:20px;">AaBI</span>
+            <span class="sname">Titre</span>
+          </button>
+        </div>
+        <button class="gallery-more" title="Autres styles"><svg viewBox="0 0 16 16"><path d="M4 5h8M4 8h8" stroke="currentColor"/><path d="M5 11l3 3 3-3" fill="none" stroke="currentColor"/></svg></button>
+      </div>
+      <div class="rgroup-label">Styles <span class="launcher"><svg viewBox="0 0 10 10"><path d="M2 2h4M2 2v4M4 4l4 4M8 5v3H5" fill="none" stroke="currentColor" stroke-width="0.9"/></svg></span></div>
+    </div>
+    <div class="vsep"></div>
+
+    <!-- Édition -->
+    <div class="rgroup">
+      <div class="rgroup-content col edition">
+        <button class="ebtn" id="btn-find" title="Rechercher (Ctrl+F)">
+          <svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4" fill="none" stroke="#4472c4"/><path d="M10 10l4 4" stroke="#4472c4"/></svg>
+          Rechercher
+          <svg viewBox="0 0 16 16" class="mini-caret"><path d="M5 7l3 3 3-3" fill="none" stroke="currentColor"/></svg>
+        </button>
+        <button class="ebtn" id="btn-replace" title="Remplacer (Ctrl+H)">
+          <svg viewBox="0 0 16 16"><text x="1" y="8" font-size="7" fill="#4472c4">ab</text><path d="M4 11c0 2 6 2 6 0M9 12l1.5-1.5L12 12" fill="none" stroke="#4472c4"/></svg>
+          Remplacer
+        </button>
+        <button class="ebtn" id="btn-select" title="Sélectionner">
+          <svg viewBox="0 0 16 16"><path d="M4 2l8 7-3.5.5L10 13l-2 1-1.5-3.5L4 12z" fill="#fff" stroke="#605e5c"/></svg>
+          Sélectionner
+          <svg viewBox="0 0 16 16" class="mini-caret"><path d="M5 7l3 3 3-3" fill="none" stroke="currentColor"/></svg>
+        </button>
+      </div>
+      <div class="rgroup-label">Édition</div>
+    </div>
+    <div class="vsep"></div>
+
+    <!-- Compléments -->
+    <div class="rgroup">
+      <div class="rgroup-content">
+        <button class="big-btn" disabled>
+          <svg viewBox="0 0 32 32"><rect x="5" y="9" width="14" height="14" rx="2" fill="#e8e6e3" stroke="#8a8886"/><rect x="13" y="5" width="14" height="14" rx="2" fill="#fff" stroke="#4472c4"/><path d="M20 9v6M17 12h6" stroke="#4472c4"/></svg>
+          <span class="big-label">Compléments</span>
+        </button>
+      </div>
+      <div class="rgroup-label">Compléments</div>
+    </div>
+  </div>
+
+  <!-- ===== INSERTION ===== -->
+  <div class="panel" id="panel-insertion">
+    <div class="rgroup">
+      <div class="rgroup-content">
+        <button class="big-btn" id="btn-table">
+          <svg viewBox="0 0 32 32"><rect x="4" y="6" width="24" height="20" fill="#fff" stroke="#8a8886"/><path d="M4 6h24v6H4z" fill="#4472c4" stroke="#4472c4"/><path d="M4 12h24M4 19h24M12 12v14M20 12v14" stroke="#8a8886" fill="none"/></svg>
+          <span class="big-label">Tableau</span>
+          <svg viewBox="0 0 16 16" class="caret"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor"/></svg>
+        </button>
+      </div>
+      <div class="rgroup-label">Tableaux</div>
+    </div>
+    <div class="vsep"></div>
+    <div class="rgroup">
+      <div class="rgroup-content">
+        <button class="big-btn" id="btn-image">
+          <svg viewBox="0 0 32 32"><rect x="4" y="6" width="24" height="20" fill="#dbe8f9" stroke="#8a8886"/><circle cx="11" cy="12" r="2.5" fill="#f0c420"/><path d="M4 22l8-7 6 5 4-3 6 5v4H4z" fill="#7aa860"/></svg>
+          <span class="big-label">Images</span>
+        </button>
+        <button class="big-btn" disabled>
+          <svg viewBox="0 0 32 32"><rect x="4" y="5" width="11" height="11" fill="none" stroke="#4472c4" stroke-width="1.8"/><circle cx="23" cy="10.5" r="5.5" fill="none" stroke="#ffb900" stroke-width="1.8"/><path d="M9.5 27.5 16 17l6.5 10.5z" fill="none" stroke="#70ad47" stroke-width="1.8"/></svg>
+          <span class="big-label">Formes</span>
+        </button>
+      </div>
+      <div class="rgroup-label">Illustrations</div>
+    </div>
+    <div class="vsep"></div>
+    <div class="rgroup">
+      <div class="rgroup-content">
+        <button class="big-btn" id="btn-link">
+          <svg viewBox="0 0 32 32"><path d="M13 19l6-6" stroke="#4472c4" stroke-width="2"/><path d="M11 21a5 5 0 0 1 0-7l3-3" fill="none" stroke="#4472c4" stroke-width="2"/><path d="M21 11a5 5 0 0 1 0 7l-3 3" fill="none" stroke="#4472c4" stroke-width="2"/></svg>
+          <span class="big-label">Lien</span>
+        </button>
+      </div>
+      <div class="rgroup-label">Liens</div>
+    </div>
+    <div class="vsep"></div>
+    <div class="rgroup">
+      <div class="rgroup-content">
+        <button class="big-btn" id="btn-symbol">
+          <svg viewBox="0 0 32 32"><text x="8" y="24" font-size="22" fill="#605e5c">Ω</text></svg>
+          <span class="big-label">Symbole</span>
+          <svg viewBox="0 0 16 16" class="caret"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor"/></svg>
+        </button>
+      </div>
+      <div class="rgroup-label">Symboles</div>
+    </div>
+  </div>
+
+  <!-- ===== CONCEPTION ===== -->
+  <div class="panel" id="panel-conception">
+    <div class="rgroup"><div class="rgroup-content placeholder">Thèmes et mise en forme du document (non disponible)</div><div class="rgroup-label">Mise en forme du document</div></div>
+  </div>
+
+  <!-- ===== MISE EN PAGE ===== -->
+  <div class="panel" id="panel-miseenpage">
+    <div class="rgroup">
+      <div class="rgroup-content">
+        <button class="big-btn" id="btn-margins">
+          <svg viewBox="0 0 32 32"><rect x="6" y="4" width="20" height="24" fill="#fff" stroke="#8a8886"/><rect x="10" y="8" width="12" height="16" fill="none" stroke="#4472c4" stroke-dasharray="2 1"/></svg>
+          <span class="big-label">Marges</span>
+          <svg viewBox="0 0 16 16" class="caret"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor"/></svg>
+        </button>
+        <button class="big-btn" id="btn-orientation">
+          <svg viewBox="0 0 32 32"><rect x="5" y="7" width="13" height="18" fill="#fff" stroke="#8a8886"/><rect x="14" y="12" width="16" height="12" fill="#dbe8f9" stroke="#4472c4"/></svg>
+          <span class="big-label">Orientation</span>
+          <svg viewBox="0 0 16 16" class="caret"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor"/></svg>
+        </button>
+      </div>
+      <div class="rgroup-label">Mise en page</div>
+    </div>
+  </div>
+
+  <!-- ===== RÉFÉRENCES ===== -->
+  <div class="panel" id="panel-references">
+    <div class="rgroup"><div class="rgroup-content placeholder">Table des matières, notes de bas de page (non disponible)</div><div class="rgroup-label">Références</div></div>
+  </div>
+
+  <!-- ===== PUBLIPOSTAGE ===== -->
+  <div class="panel" id="panel-publipostage">
+    <div class="rgroup"><div class="rgroup-content placeholder">Publipostage (non disponible)</div><div class="rgroup-label">Publipostage</div></div>
+  </div>
+
+  <!-- ===== RÉVISION ===== -->
+  <div class="panel" id="panel-revision">
+    <div class="rgroup">
+      <div class="rgroup-content">
+        <button class="big-btn" id="btn-spell-toggle">
+          <svg viewBox="0 0 32 32"><text x="3" y="15" font-size="11" fill="#605e5c">ABC</text><path d="M6 22l4 5 9-11" fill="none" stroke="#2e7d32" stroke-width="2.5"/></svg>
+          <span class="big-label">Orthographe</span>
+        </button>
+        <button class="big-btn" id="btn-stats">
+          <svg viewBox="0 0 32 32"><text x="4" y="20" font-size="13" fill="#4472c4">123</text><path d="M4 25h24" stroke="#8a8886"/></svg>
+          <span class="big-label">Statistiques</span>
+        </button>
+      </div>
+      <div class="rgroup-label">Vérification</div>
+    </div>
+  </div>
+
+  <!-- ===== AFFICHAGE ===== -->
+  <div class="panel" id="panel-affichage">
+    <div class="rgroup">
+      <div class="rgroup-content">
+        <button class="big-btn" id="btn-zoom100">
+          <svg viewBox="0 0 32 32"><circle cx="14" cy="14" r="9" fill="none" stroke="#4472c4" stroke-width="2"/><path d="M21 21l7 7" stroke="#4472c4" stroke-width="2"/><text x="9" y="18" font-size="9" fill="#4472c4">1:1</text></svg>
+          <span class="big-label">100 %</span>
+        </button>
+        <button class="big-btn" id="btn-zoompage">
+          <svg viewBox="0 0 32 32"><rect x="8" y="4" width="16" height="24" fill="#fff" stroke="#8a8886"/><circle cx="20" cy="20" r="6" fill="none" stroke="#4472c4" stroke-width="1.5"/><path d="M24.5 24.5 29 29" stroke="#4472c4" stroke-width="1.5"/></svg>
+          <span class="big-label">Page entière</span>
+        </button>
+      </div>
+      <div class="rgroup-label">Zoom</div>
+    </div>
+  </div>
+
+  <!-- ===== AIDE ===== -->
+  <div class="panel" id="panel-aide">
+    <div class="rgroup"><div class="rgroup-content placeholder">DaveOffice 1.0 — traitement de texte personnel. Raccourcis : Ctrl+S enregistrer, Ctrl+O ouvrir, Ctrl+G/B gras, Ctrl+I italique, Ctrl+U souligné, Ctrl+F rechercher, Ctrl+H remplacer.</div><div class="rgroup-label">Aide</div></div>
+  </div>
+</div>
+
+<!-- ============ ZONE DOCUMENT ============ -->
+<main id="workspace">
+  <div id="page-wrap">
+    <div id="page">
+      <div id="editor" contenteditable="true" spellcheck="true" lang="fr"><p><br></p></div>
+    </div>
+  </div>
+</main>
+
+<!-- ============ BARRE DE STATUT ============ -->
+<footer id="statusbar">
+  <div class="sb-left">
+    <span id="sb-page">Page 1 sur 1</span>
+    <span id="sb-words">0 mots</span>
+    <span class="sb-spell" id="sb-spell" title="Vérification orthographique">
+      <svg viewBox="0 0 16 16"><rect x="1" y="2" width="10" height="12" rx="1" fill="none" stroke="currentColor"/><path d="M3 5h6M3 8h6M3 11h4" stroke="currentColor" stroke-width="0.8"/><path d="M9 11l2 2.5 4-5" fill="none" stroke="#2e7d32" stroke-width="1.5"/></svg>
+    </span>
+    <span id="sb-lang">Français (France)</span>
+    <span class="sb-access">
+      <svg viewBox="0 0 16 16"><circle cx="8" cy="3" r="1.5" fill="currentColor"/><path d="M3 6h10M8 6v4M8 10l-3 4M8 10l3 4" fill="none" stroke="currentColor"/></svg>
+      Accessibilité : vérification terminée
+    </span>
+  </div>
+  <div class="sb-right">
+    <button class="sb-view" title="Mode Lecture"><svg viewBox="0 0 16 16"><path d="M2 3c2-1 4-1 6 0v10c-2-1-4-1-6 0zM8 3c2-1 4-1 6 0v10c-2-1-4-1-6 0z" fill="none" stroke="currentColor"/></svg></button>
+    <button class="sb-view active" title="Page"><svg viewBox="0 0 16 16"><rect x="3" y="1.5" width="10" height="13" fill="none" stroke="currentColor"/><path d="M5 5h6M5 8h6M5 11h4" stroke="currentColor" stroke-width="0.8"/></svg></button>
+    <button class="sb-view" title="Web"><svg viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" fill="none" stroke="currentColor"/><path d="M1.5 5.5h13" stroke="currentColor"/></svg></button>
+    <button class="sb-zoom-btn" id="zoom-minus">−</button>
+    <input type="range" id="zoom-slider" min="30" max="300" value="100" step="10">
+    <button class="sb-zoom-btn" id="zoom-plus">+</button>
+    <span id="zoom-label">100 %</span>
+  </div>
+</footer>
+
+<!-- ============ BACKSTAGE (FICHIER) ============ -->
+<div id="backstage" class="hidden">
+  <div class="bs-left">
+    <button class="bs-back" id="bs-back" title="Retour">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor"/><path d="M14 7l-5 5 5 5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+    </button>
+    <button class="bs-item" id="bs-new">Nouveau</button>
+    <button class="bs-item" id="bs-open">Ouvrir</button>
+    <div class="bs-sep"></div>
+    <button class="bs-item" id="bs-save">Enregistrer</button>
+    <button class="bs-item" id="bs-saveas">Enregistrer sous</button>
+    <button class="bs-item" id="bs-print">Imprimer</button>
+    <div class="bs-sep"></div>
+    <button class="bs-item" id="bs-close">Fermer</button>
+  </div>
+  <div class="bs-right">
+    <h1>Bonjour</h1>
+    <h2 id="bs-filename">Document1</h2>
+    <p id="bs-filepath" class="bs-path">Document non enregistré</p>
+  </div>
+</div>
+
+<!-- ============ PANNEAU RECHERCHER/REMPLACER ============ -->
+<div id="find-panel" class="hidden">
+  <div class="fp-row">
+    <input type="text" id="find-input" placeholder="Rechercher dans le document...">
+    <button id="find-next">Suivant</button>
+    <button id="find-close" title="Fermer">✕</button>
+  </div>
+  <div class="fp-row" id="replace-row">
+    <input type="text" id="replace-input" placeholder="Remplacer par...">
+    <button id="replace-one">Remplacer</button>
+    <button id="replace-all">Tout remplacer</button>
+  </div>
+  <div class="fp-status" id="fp-status"></div>
+</div>
+
+<!-- Menus contextuels ruban -->
+<div id="dropdown" class="hidden"></div>
+
+<input type="color" id="forecolor-input" value="#c00000" class="offscreen">
+<input type="color" id="highlight-input" value="#ffff00" class="offscreen">
+
+<script src="app.js"></script>
+</body>
+</html>
