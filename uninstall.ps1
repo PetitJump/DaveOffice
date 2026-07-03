@@ -30,6 +30,12 @@ $docxDefault = (Get-ItemProperty 'HKCU:\Software\Classes\.docx' -ErrorAction Sil
 if ($docxDefault -eq 'DaveOffice.Document') { reg delete 'HKCU\Software\Classes\.docx' /ve /f | Out-Null }
 try { Remove-ItemProperty 'HKCU:\Software\RegisteredApplications' -Name 'DaveOffice' -ErrorAction Stop } catch {}
 
+# Exclusion Windows Defender
+try {
+    Start-Process powershell -Verb RunAs -Wait -ArgumentList '-NoProfile', '-WindowStyle', 'Hidden', '-Command', "Remove-MpPreference -ExclusionPath '$(Join-Path $env:LOCALAPPDATA 'DaveOffice')'"
+    Write-Host 'Exclusion Defender retiree.'
+} catch { Write-Host 'Exclusion Defender non retiree (UAC refuse).' }
+
 # Code
 if ($RemoveCode) {
     $Root = Join-Path $env:LOCALAPPDATA 'DaveOffice'

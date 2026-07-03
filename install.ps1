@@ -109,6 +109,21 @@ Set-ItemProperty 'HKCU:\Software\DaveOffice\Capabilities\FileAssociations' -Name
 if (-not (Test-Path 'HKCU:\Software\RegisteredApplications')) { New-Item -Force 'HKCU:\Software\RegisteredApplications' | Out-Null }
 Set-ItemProperty 'HKCU:\Software\RegisteredApplications' -Name 'DaveOffice' -Value 'Software\DaveOffice\Capabilities'
 
+# --- 6. Exclusion Windows Defender (sinon ~1 min de scan a chaque lancement) ---
+Write-Host 'Exclusion Windows Defender (une fenetre UAC peut s''ouvrir)...'
+$principal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+if ($principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    try { Add-MpPreference -ExclusionPath $Root -ErrorAction Stop; Write-Host 'Exclusion ajoutee.' }
+    catch { Write-Host "Exclusion impossible : $($_.Exception.Message)" }
+} else {
+    try {
+        Start-Process powershell -Verb RunAs -Wait -ArgumentList '-NoProfile', '-WindowStyle', 'Hidden', '-Command', "Add-MpPreference -ExclusionPath '$Root'"
+        Write-Host 'Exclusion ajoutee.'
+    } catch {
+        Write-Host 'Exclusion Defender ignoree (UAC refuse) - le premier lancement peut etre lent.'
+    }
+}
+
 # Rafraichir l'explorateur (icones / associations / menu Nouveau)
 $sig = '[DllImport("shell32.dll")] public static extern void SHChangeNotify(int wEventId, int uFlags, IntPtr dwItem1, IntPtr dwItem2);'
 Add-Type -MemberDefinition $sig -Namespace Win32 -Name ShellNotify
