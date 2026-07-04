@@ -26,9 +26,11 @@ Ensuite, **toutes les mises à jour se font dans l'application** : onglet Aide �
 
 ## Installation macOS
 
-**Prérequis** : git, node et npm. S'ils manquent, avec [Homebrew](https://brew.sh) :
+**Prérequis** : git, node et npm. Si [Homebrew](https://brew.sh) n'est pas installé, installez-le, puis installez les outils (`node` inclut `npm`) :
 
 ```bash
+# Installe Homebrew s'il manque
+command -v brew >/dev/null || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 brew install git node
 ```
 
@@ -51,6 +53,11 @@ sudo apt install git nodejs npm        # Debian / Ubuntu
 sudo dnf install git nodejs npm        # Fedora
 sudo pacman -S git nodejs npm          # Arch
 ```
+
+> Sur Debian/Ubuntu, le paquet `nodejs` d'apt peut être ancien. Si l'installation échoue, installez une version à jour via [NodeSource](https://github.com/nodesource/distributions) :
+> ```bash
+> curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash - && sudo apt install -y nodejs
+> ```
 
 Puis :
 
