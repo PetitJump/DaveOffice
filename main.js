@@ -335,6 +335,22 @@ ipcMain.handle('uninstall', async () => {
   app.exit(0);
 });
 
+ipcMain.handle('set-default-docx', async () => {
+  if (process.platform === 'win32') {
+    // OpenAs_RunDLL ouvre la boite "Comment ouvrir ce fichier ?" avec la
+    // case "Toujours utiliser cette application" pour l'extension .docx.
+    // C'est Windows qui ecrit le choix par defaut (methode sanctionnee).
+    const sample = path.join(__dirname, 'assets', 'template.docx');
+    const child = spawn('rundll32.exe', ['shell32.dll,OpenAs_RunDLL', sample], { detached: true, stdio: 'ignore' });
+    child.unref();
+    return { ok: true, platform: 'win32' };
+  }
+  if (process.platform === 'darwin') {
+    return { ok: false, info: 'macOS : dans le Finder, clic droit sur un fichier .docx > Lire les informations > section « Ouvrir avec » > choisir DaveOffice > bouton « Tout modifier… ».' };
+  }
+  return { ok: false, info: 'Linux : clic droit sur un fichier .docx > Propriétés (ou « Ouvrir avec ») > choisir DaveOffice > « Définir par défaut ».' };
+});
+
 ipcMain.handle('pick-image', async () => {
   const r = await dialog.showOpenDialog(win, {
     title: 'Insérer une image',

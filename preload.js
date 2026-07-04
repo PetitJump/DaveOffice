@@ -12,6 +12,7 @@ contextBridge.exposeInMainWorld('daveAPI', {
   checkUpdates: () => ipcRenderer.invoke('check-updates'),
   doUpdate: () => ipcRenderer.invoke('do-update'),
   uninstall: () => ipcRenderer.invoke('uninstall'),
+  setDefaultDocx: () => ipcRenderer.invoke('set-default-docx'),
   setDirty: (d) => ipcRenderer.send('set-dirty', d),
   winControl: (action) => ipcRenderer.send('win-control', action),
   print: () => ipcRenderer.send('print'),

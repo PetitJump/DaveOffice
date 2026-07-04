@@ -71,7 +71,7 @@ Sur macOS comme sur Linux, les **mises à jour se font dans l'application** : on
 
 ## Intégration Windows
 
-- **Ouvrir les .docx avec DaveOffice** : clic droit sur un `.docx` → *Ouvrir avec* → *Choisir une autre application* → **DaveOffice** → cocher *Toujours*. (Ou Paramètres Windows → Applications par défaut → DaveOffice.)
+- **Ouvrir les .docx avec DaveOffice** : dans l'application, onglet **Aide → Par défaut .docx** — ouvre directement la fenêtre Windows où il suffit de choisir DaveOffice et cocher *Toujours*. (Windows interdit à une application de se définir par défaut sans confirmation de l'utilisateur ; ce bouton est le raccourci le plus direct.)
 - **Clic droit → Nouveau → Document DaveOffice** : disponible une fois DaveOffice défini comme application par défaut des `.docx`.
 - **Mises à jour** : dans l'application, onglet **Aide → Mises à jour** (compare la version locale aux releases GitHub du dépôt, puis met à jour et redémarre).
 

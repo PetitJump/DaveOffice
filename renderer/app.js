@@ -978,6 +978,15 @@
     const u = await api.doUpdate();
     if (u && u.error) alert('Échec de la mise à jour :\n' + u.error);
   });
+  document.getElementById('btn-setdefault').addEventListener('click', async () => {
+    const r = await api.setDefaultDocx();
+    if (r.ok) {
+      alert('Une fenêtre Windows va s\'ouvrir.\n\nChoisissez DaveOffice dans la liste et cochez « Toujours utiliser cette application pour ouvrir les fichiers .docx », puis OK.');
+    } else if (r.info) {
+      alert(r.info);
+    }
+  });
+
   document.getElementById('btn-uninstall').addEventListener('click', async () => {
     const ok = confirm('Désinstaller DaveOffice de cet ordinateur ?\n\nSeront supprimés : l\'application, les raccourcis, les entrées du registre et l\'exclusion antivirus.\nVos documents (.docx) ne sont PAS supprimés.');
     if (!ok) return;
