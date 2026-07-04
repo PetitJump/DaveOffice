@@ -4,7 +4,8 @@
   "description": "Traitement de texte de bureau - usage personnel",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "test": "electron test-harness.js"
   },
   "author": "PetitJump",
   "license": "MIT",
