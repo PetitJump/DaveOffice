@@ -301,16 +301,35 @@ ipcMain.handle('confirm-discard', async () => {
   return r.response === 0;
 });
 
+// Dossier d'installation selon la plateforme (identique aux scripts install)
+function installedAppDir() {
+  if (process.platform === 'win32') {
+    return path.join(process.env.LOCALAPPDATA || '', 'DaveOffice', 'app');
+  }
+  if (process.platform === 'darwin') {
+    return path.join(os.homedir(), 'Library', 'Application Support', 'DaveOffice', 'app');
+  }
+  const base = process.env.XDG_DATA_HOME || path.join(os.homedir(), '.local', 'share');
+  return path.join(base, 'DaveOffice', 'app');
+}
+
 ipcMain.handle('uninstall', async () => {
-  const script = path.join(__dirname, 'uninstall.ps1');
-  if (!fs.existsSync(script)) return { error: 'uninstall.ps1 introuvable.' };
+  const isWin = process.platform === 'win32';
+  const script = path.join(__dirname, isWin ? 'uninstall.ps1' : 'uninstall.sh');
+  if (!fs.existsSync(script)) return { error: path.basename(script) + ' introuvable.' };
   // Copie dans TEMP : le script survit à la suppression du dossier de l'app
-  const tmp = path.join(os.tmpdir(), 'daveoffice-uninstall.ps1');
+  const tmp = path.join(os.tmpdir(), isWin ? 'daveoffice-uninstall.ps1' : 'daveoffice-uninstall.sh');
   fs.copyFileSync(script, tmp);
-  const child = spawn('powershell', [
-    '-NoProfile', '-ExecutionPolicy', 'Bypass',
-    '-Command', `Start-Sleep -Seconds 2; & '${tmp}' -RemoveCode`
-  ], { detached: true, stdio: 'ignore', windowsHide: false });
+  let child;
+  if (isWin) {
+    child = spawn('powershell', [
+      '-NoProfile', '-ExecutionPolicy', 'Bypass',
+      '-Command', `Start-Sleep -Seconds 2; & '${tmp}' -RemoveCode`
+    ], { detached: true, stdio: 'ignore', windowsHide: false });
+  } else {
+    fs.chmodSync(tmp, 0o755);
+    child = spawn('bash', ['-c', `sleep 2; "${tmp}" --remove-code`], { detached: true, stdio: 'ignore' });
+  }
   child.unref();
   isDirty = false;
   app.exit(0);
@@ -372,12 +391,18 @@ ipcMain.handle('do-update', async () => {
       p.on('error', reject);
       p.on('close', (c) => (c === 0 ? resolve() : reject(new Error(errOut.trim() || ('code ' + c)))));
     });
-    const installScript = path.join(__dirname, 'install.ps1');
-    const installedDir = path.join(process.env.LOCALAPPDATA || '', 'DaveOffice', 'app');
-    if (fs.existsSync(installScript) && path.resolve(__dirname).toLowerCase() === path.resolve(installedDir).toLowerCase()) {
-      // Copie installee : l'installeur refait tout (pull, deps, raccourcis, registre)
-      await run('powershell', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', `"${installScript}"`]);
+    const isWin = process.platform === 'win32';
+    const installScript = path.join(__dirname, isWin ? 'install.ps1' : 'install.sh');
+    const inInstalledDir = path.resolve(__dirname).toLowerCase() === path.resolve(installedAppDir()).toLowerCase();
+    if (fs.existsSync(installScript) && inInstalledDir) {
+      // Copie installee : l'installeur refait tout (maj code, deps, raccourcis)
+      if (isWin) {
+        await run('powershell', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', `"${installScript}"`]);
+      } else {
+        await run('bash', [`"${installScript}"`]);
+      }
     } else {
+      // Copie de dev ou emplacement inhabituel : simple mise a jour git
       await run('git', ['pull', '--ff-only']);
       await run('npm', ['install', '--no-audit', '--no-fund']);
     }
