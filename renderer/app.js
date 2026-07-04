@@ -54,6 +54,95 @@
     setDirty(true);
   }
 
+  // ---------- Historique universel (annuler / rétablir) ----------
+  // Un MutationObserver capture TOUTE modification du document (frappe,
+  // tableaux, couleurs, tri, images...) pour un Ctrl+Z fiable partout.
+  const MO_OPTS = { childList: true, subtree: true, attributes: true, characterData: true };
+  const history = { stack: [], index: -1, max: 200 };
+  let histTimer = null;
+
+  function caretOffset() {
+    const sel = window.getSelection();
+    if (!sel.rangeCount || !editor.contains(sel.anchorNode)) return null;
+    const range = sel.getRangeAt(0);
+    const pre = range.cloneRange();
+    pre.selectNodeContents(editor);
+    pre.setEnd(range.endContainer, range.endOffset);
+    return pre.toString().length;
+  }
+  function setCaret(offset) {
+    if (offset == null) { editor.focus(); return; }
+    let remaining = offset, node, target = null;
+    const walker = document.createTreeWalker(editor, NodeFilter.SHOW_TEXT);
+    while ((node = walker.nextNode())) {
+      if (remaining <= node.length) { target = node; break; }
+      remaining -= node.length;
+    }
+    const range = document.createRange();
+    if (target) range.setStart(target, remaining);
+    else { range.selectNodeContents(editor); range.collapse(false); }
+    range.collapse(true);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    editor.focus();
+  }
+  function snapshot() {
+    clearTimeout(histTimer);
+    const html = editor.innerHTML;
+    if (history.index >= 0 && history.stack[history.index].html === html) return;
+    history.stack = history.stack.slice(0, history.index + 1);
+    history.stack.push({ html, caret: caretOffset() });
+    if (history.stack.length > history.max) history.stack.shift();
+    history.index = history.stack.length - 1;
+  }
+  function scheduleSnapshot() {
+    clearTimeout(histTimer);
+    histTimer = setTimeout(snapshot, 450);
+  }
+  function resetHistory() {
+    history.stack = [];
+    history.index = -1;
+    snapshot();
+  }
+  // Charge un contenu sans reveiller l'observer (evite un faux "modifie")
+  function loadContent(html) {
+    mo.disconnect();
+    editor.innerHTML = html;
+    mo.observe(editor, MO_OPTS);
+  }
+  function applyHistory(state) {
+    mo.disconnect();
+    editor.innerHTML = state.html;
+    setCaret(state.caret);
+    mo.observe(editor, MO_OPTS);
+    deselectImage();
+    setDirty(true);
+    updateStatus();
+  }
+  function undo() {
+    snapshot();
+    if (history.index <= 0) return;
+    history.index--;
+    applyHistory(history.stack[history.index]);
+  }
+  function redo() {
+    if (history.index >= history.stack.length - 1) return;
+    history.index++;
+    applyHistory(history.stack[history.index]);
+  }
+
+  let statusTimer = null;
+  let autosaveTimer = null;
+  const mo = new MutationObserver(() => {
+    setDirty(true);
+    scheduleSnapshot();
+    clearTimeout(statusTimer);
+    statusTimer = setTimeout(updateStatus, 600);
+    scheduleAutosave();
+  });
+  mo.observe(editor, MO_OPTS);
+
   function getSelectedBlocks() {
     const sel = window.getSelection();
     if (!sel.rangeCount) return [];
@@ -615,13 +704,14 @@
         if (dirty && !(await api.confirmDiscard())) return;
         const res = await api.openPath(r.path);
         if (res.canceled) { if (res.error) alert(res.error); return; }
-        editor.innerHTML = res.html || '<p><br></p>';
+        loadContent(res.html || '<p><br></p>');
         currentFilePath = res.filePath;
         currentFileName = res.fileName;
         setDirty(false);
         clearDraft();
         saveRecent(res.filePath, res.fileName);
         updateStatus();
+        resetHistory();
         editor.focus();
       });
       box.appendChild(b);
@@ -655,12 +745,13 @@
   // ---------- Fichiers ----------
   async function newDoc() {
     if (dirty && !(await api.confirmDiscard())) return;
-    editor.innerHTML = '<p><br></p>';
+    loadContent('<p><br></p>');
     currentFilePath = null;
     currentFileName = 'Document1';
     setDirty(false);
     clearDraft();
     updateStatus();
+    resetHistory();
     editor.focus();
   }
 
@@ -668,13 +759,14 @@
     if (dirty && !(await api.confirmDiscard())) return;
     const r = await api.openFile();
     if (r.canceled) return;
-    editor.innerHTML = r.html || '<p><br></p>';
+    loadContent(r.html || '<p><br></p>');
     currentFilePath = r.filePath;
     currentFileName = r.fileName;
     setDirty(false);
     clearDraft();
     saveRecent(r.filePath, r.fileName);
     updateStatus();
+    resetHistory();
     editor.focus();
   }
 
@@ -693,8 +785,8 @@
   }
 
   document.getElementById('qat-save').addEventListener('click', () => saveDoc(false));
-  document.getElementById('qat-undo').addEventListener('click', () => exec('undo'));
-  document.getElementById('qat-redo').addEventListener('click', () => exec('redo'));
+  document.getElementById('qat-undo').addEventListener('click', () => undo());
+  document.getElementById('qat-redo').addEventListener('click', () => redo());
 
   // ---------- Insertion ----------
   function currentCell() {
@@ -894,12 +986,29 @@
     page.style.minHeight = (needed * 29.7) + 'cm';
   }
 
-  let statusTimer = null;
-  editor.addEventListener('input', () => {
-    setDirty(true);
-    clearTimeout(statusTimer);
-    statusTimer = setTimeout(updateStatus, 600);
-  });
+  // ---------- Sauvegarde automatique dans le fichier ----------
+  function scheduleAutosave() {
+    if (!currentFilePath) return;
+    clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(doAutosave, 8000);
+  }
+  async function doAutosave() {
+    if (!currentFilePath || !dirty) return;
+    const r = await api.saveFile({ html: editor.innerHTML, filePath: currentFilePath, saveAs: false });
+    if (r && !r.canceled) {
+      setDirty(false);
+      clearDraft();
+      flashStatus('Enregistré automatiquement');
+    }
+  }
+  let flashTimer = null;
+  function flashStatus(msg) {
+    const el = document.getElementById('sb-autosave');
+    if (!el) return;
+    el.textContent = msg;
+    clearTimeout(flashTimer);
+    flashTimer = setTimeout(() => { el.textContent = ''; }, 2500);
+  }
 
   // ---------- Raccourcis clavier ----------
   document.addEventListener('keydown', (e) => {
@@ -947,7 +1056,9 @@
       setDirty(true);
       return;
     }
-    if (k === 's') { e.preventDefault(); saveDoc(e.shiftKey); }
+    if (k === 'z' && !e.shiftKey) { e.preventDefault(); undo(); }
+    else if (k === 'y' || (k === 'z' && e.shiftKey)) { e.preventDefault(); redo(); }
+    else if (k === 's') { e.preventDefault(); saveDoc(e.shiftKey); }
     else if (k === 'o') { e.preventDefault(); openDoc(); }
     else if (k === 'n') { e.preventDefault(); newDoc(); }
     else if (k === 'g' && !e.shiftKey) { e.preventDefault(); exec('bold'); }
@@ -958,7 +1069,7 @@
     else if (k === 'l') { e.preventDefault(); exec('justifyLeft'); }
     else if (k === 'r') { e.preventDefault(); exec('justifyRight'); }
     else if (k === 'j') { e.preventDefault(); exec('justifyFull'); }
-    // Ctrl+B/I/U/Z/Y : gérés nativement par Chromium
+    // Ctrl+B/I/U : gérés nativement par Chromium
   });
 
   // ---------- Mises à jour ----------
@@ -1001,13 +1112,14 @@
   // ---------- Fichier ouvert depuis Windows (double-clic .docx) ----------
   api.onFileOpened(async (data) => {
     if (dirty && !(await api.confirmDiscard())) return;
-    editor.innerHTML = data.html || '<p><br></p>';
+    loadContent(data.html || '<p><br></p>');
     currentFilePath = data.filePath;
     currentFileName = data.fileName;
     setDirty(false);
     clearDraft();
     saveRecent(data.filePath, data.fileName);
     updateStatus();
+    resetHistory();
     editor.focus();
   });
 
@@ -1027,6 +1139,60 @@
     setZoom(parseInt(zoomSlider.value, 10) + (e.deltaY < 0 ? 10 : -10));
   }, { passive: false });
 
+  // ---------- Redimensionnement des images à la souris ----------
+  let selectedImg = null;
+  let resizing = false;
+  const imgHandle = document.createElement('div');
+  imgHandle.className = 'img-handle hidden';
+  document.body.appendChild(imgHandle);
+
+  function positionHandle() {
+    if (!selectedImg) return;
+    const r = selectedImg.getBoundingClientRect();
+    imgHandle.style.left = (r.right - 7) + 'px';
+    imgHandle.style.top = (r.bottom - 7) + 'px';
+  }
+  function selectImage(img) {
+    if (selectedImg && selectedImg !== img) selectedImg.classList.remove('img-selected');
+    selectedImg = img;
+    img.classList.add('img-selected');
+    positionHandle();
+    imgHandle.classList.remove('hidden');
+  }
+  function deselectImage() {
+    if (selectedImg) selectedImg.classList.remove('img-selected');
+    selectedImg = null;
+    imgHandle.classList.add('hidden');
+  }
+  editor.addEventListener('click', (e) => {
+    if (e.target.tagName === 'IMG') selectImage(e.target);
+    else if (!resizing) deselectImage();
+  });
+  imgHandle.addEventListener('mousedown', (e) => {
+    if (!selectedImg) return;
+    e.preventDefault();
+    resizing = true;
+    const startX = e.clientX;
+    const startW = selectedImg.offsetWidth;
+    const zoom = parseFloat(pageWrap.style.zoom || '1') || 1;
+    const onMove = (ev) => {
+      const w = Math.max(24, startW + (ev.clientX - startX) / zoom);
+      selectedImg.style.width = Math.round(w) + 'px';
+      selectedImg.style.height = 'auto';
+      positionHandle();
+    };
+    const onUp = () => {
+      resizing = false;
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      setDirty(true);
+      snapshot();
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+  document.getElementById('workspace').addEventListener('scroll', () => { if (selectedImg) positionHandle(); });
+
   // ---------- Init ----------
   const uname = api.userName || '';
   if (uname) {
@@ -1041,7 +1207,7 @@
     if (draft && draft.html && draft.html !== '<p><br></p>') {
       const when = new Date(draft.ts).toLocaleString('fr-FR');
       if (confirm(`Un document non enregistré a été récupéré (${draft.fileName}, ${when}).\n\nLe restaurer ?`)) {
-        editor.innerHTML = draft.html;
+        loadContent(draft.html);
         currentFilePath = draft.filePath;
         currentFileName = draft.fileName;
         setDirty(true);
@@ -1053,5 +1219,6 @@
 
   updateTitle();
   updateStatus();
+  resetHistory();
   editor.focus();
 })();

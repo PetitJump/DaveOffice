@@ -493,6 +493,21 @@ svg { display: block; }
 }
 .tbl-cell.hot { background: #d5e3f5; border-color: #2b579a; }
 
+/* Sauvegarde auto (barre de statut) */
+.sb-autosave { color: #2e7d32; }
+
+/* Redimensionnement d'image */
+#editor img.img-selected { outline: 2px solid #2b579a; outline-offset: 1px; }
+.img-handle {
+  position: fixed;
+  width: 14px; height: 14px;
+  background: #fff;
+  border: 2px solid #2b579a;
+  border-radius: 2px;
+  cursor: nwse-resize;
+  z-index: 80;
+}
+
 /* Filigrane */
 .watermark {
   position: absolute;
